@@ -135,14 +135,13 @@ def buy_item(item_id, cursor, connect, message):
         return utils.NOT_ENOUGH_LEVEL_TEXT
     if item_cost > money:
         return utils.NOT_ENOUGH_MONEY_TEXT
-    cursor.execute(f'update person set Money = {money - item_cost} '
-                   f'where UserID = {message.chat.id}')
+    cursor.execute(f'update person set Money = {money - item_cost} where UserID = {message.chat.id}')
     connect.commit()
     cursor.execute(f'select quantity from items_links where UserID = {message.chat.id} and ItemID = {item_id}')
     quantity = cursor.fetchall()
     if len(quantity) != 0:
-        cursor.execute(f'update items_links set quantity = {quantity[0][0] + 1} '
-                       f'where UserID = {message.chat.id} and ItemID = {item_id}')
+        cursor.execute(f'update items_links set quantity = {quantity[0][0] + 1} where UserID = {message.chat.id} and '
+                       f'ItemID = {item_id}')
         connect.commit()
     else:
         if ItemType == 'potion':
@@ -171,8 +170,8 @@ def sell_item(item_id, cursor, connect, message):
         item_cost = cursor.fetchall()[0][0]
         remain = quantity[0][0] - 1
         if remain > 0:
-            cursor.execute(f'update items_links set quantity = {remain} '
-                           f'where UserID = {message.chat.id} and ItemID = {item_id}')
+            cursor.execute(f'update items_links set quantity = {remain} where UserID = {message.chat.id} and '
+                           f'ItemID = {item_id}')
             connect.commit()
         else:
             cursor.execute(f'DELETE from items_links where UserId = {message.chat.id} and ItemID = {item_id}')
@@ -196,12 +195,10 @@ def use_item(item_id, cursor, connect, message):
             active = item[0]
             is_exist = True
             break
-    cursor.execute(f'update items_links set IsActive = 1 where UserID = {message.chat.id} and '
-                   f'ItemID = {item_id}')
+    cursor.execute(f'update items_links set IsActive = 1 where UserID = {message.chat.id} and ItemID = {item_id}')
     connect.commit()
     if not is_exist:
         return utils.ITEM_IS_IN_USE_TEXT
-    cursor.execute(f'update items_links set IsActive = 0 where UserID = {message.chat.id} and '
-                   f'ItemID = {active}')
+    cursor.execute(f'update items_links set IsActive = 0 where UserID = {message.chat.id} and ItemID = {active}')
     connect.commit()
     return utils.ITEM_IS_IN_USE_TEXT
