@@ -26,6 +26,7 @@ def create_stats_location_text(locations):
 UNKNOWN_TEST = 'Я не знаю такую команду'
 HELPER_TEXT = '/help - помощь\n' \
               '/stats_player - прислать статистику игрока\n' \
-              '/stats_cities - прислать описание городов\n'
-HELLO_TEXT = 'Привет!\n' \
-             'Подробности: /help\n'
+              '/stats_locations - прислать описание локаций (городов и подземелий)\n' \
+              'inventory - показать текущий инвентарь\n'
+HELLO_TEXT = 'Привет! Персонаж создан! В качестве бонуса ты получаешь 2 зелья!\n' \
+             'Подробности и правила игры: /help\n'

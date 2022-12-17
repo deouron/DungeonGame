@@ -1,15 +1,13 @@
 import sqlite3
-import asyncio
 
 
 def create_person_db():
-    connect = sqlite3.connect('dbs/person.db', check_same_thread=False)
+    connect = sqlite3.connect('dbs/data.db', check_same_thread=False)
     cursor = connect.cursor()
     cursor.execute("drop table if exists person")
     connect.commit()
     cursor.execute("""create table person(
-            UserID integer primary key autoincrement,
-            ChatId int DEFAULT 0,
+            UserID int DEFAULT 0,
             Nickname text DEFAULT "Character",
             LEVEL int DEFAULT 1,
             HP int DEFAULT 10,
@@ -26,7 +24,7 @@ def create_person_db():
 
 
 def create_mobs_db():
-    connect = sqlite3.connect('dbs/mobs.db', check_same_thread=False)
+    connect = sqlite3.connect('dbs/data.db', check_same_thread=False)
     cursor = connect.cursor()
     cursor.execute("drop table if exists mobs")
     connect.commit()
@@ -44,7 +42,7 @@ def create_mobs_db():
 
 
 def create_locations_db():
-    connect = sqlite3.connect('dbs/locations.db', check_same_thread=False)
+    connect = sqlite3.connect('dbs/data.db', check_same_thread=False)
     cursor = connect.cursor()
     cursor.execute("drop table if exists locations")
     connect.commit()
@@ -59,7 +57,7 @@ def create_locations_db():
 
 
 def create_items_db():
-    connect = sqlite3.connect('dbs/items.db', check_same_thread=False)
+    connect = sqlite3.connect('dbs/data.db', check_same_thread=False)
     cursor = connect.cursor()
     cursor.execute("drop table if exists items")
     connect.commit()
@@ -80,7 +78,7 @@ def create_items_db():
 
 
 def create_items_links_db():
-    connect = sqlite3.connect('dbs/items_links.db', check_same_thread=False)
+    connect = sqlite3.connect('dbs/data.db', check_same_thread=False)
     cursor = connect.cursor()
     cursor.execute("drop table if exists items_links")
     connect.commit()
