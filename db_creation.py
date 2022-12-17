@@ -18,7 +18,7 @@ def create_person_db():
             XP int DEFAULT 0,
             Armour int DEFAULT 0,
             MagicArmour int DEFAULT 0,
-            LocationID text DEFAULT 1
+            LocationID int DEFAULT 1
             );""")
     connect.commit()
 
@@ -64,7 +64,8 @@ def create_locations_links_db():
     cursor.execute("""create table locations_links(
             LocationsLinkID integer primary key autoincrement,
             FirstLocationID int DEFAULT 0,
-            SecondLocationID int DEFAULT 0
+            SecondLocationID int DEFAULT 0,
+            MoveDuration int DEFAULT 0
             );""")
     connect.commit()
 

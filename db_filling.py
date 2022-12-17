@@ -38,6 +38,9 @@ def fill_locations():
     connect.commit()
     cursor.execute('INSERT INTO locations (LocationName, XCoord, YCoord) VALUES (?, ?, ?)', ['Novigrad', 0, 2])
     connect.commit()
+    cursor.execute('INSERT INTO locations (LocationName, LocationType, XCoord, YCoord) VALUES (?, ?, ?, ?)',
+                   ['Skellige', 'dungeon', 2, 0])
+    connect.commit()
 
 
 def fill_location_reachability():
@@ -45,14 +48,19 @@ def fill_location_reachability():
     cursor = connect.cursor()
     cursor.execute(f'select LocationID, XCoord, YCoord from locations')
     locations = list(cursor.fetchall())
-    for i in range(len(locations) - 1):
-        for j in range(i + 1, len(locations)):
+    for i in range(len(locations)):
+        for j in range(i, len(locations)):
+            if i == j:
+                cursor.execute(
+                    'INSERT INTO locations_links (FirstLocationID, SecondLocationID, MoveDuration) VALUES (?, ?, ?)',
+                    [locations[i][0], locations[j][0], 0])
+                connect.commit()
+                continue
             distance = ((locations[i][1] - locations[j][1])**2 + (locations[i][2] - locations[j][2])**2)**0.5
             if distance <= 10.01:
-                cursor.execute('INSERT INTO locations_links (FirstLocationID, SecondLocationID) VALUES (?, ?)',
-                               [locations[i][0], locations[j][0]])
+                cursor.execute('INSERT INTO locations_links (FirstLocationID, SecondLocationID, MoveDuration) VALUES (?, ?, ?)',
+                               [locations[i][0], locations[j][0], round(distance)])
                 connect.commit()
-                cursor.execute('INSERT INTO locations_links (FirstLocationID, SecondLocationID) VALUES (?, ?)',
-                               [locations[j][0], locations[i][0]])
+                cursor.execute('INSERT INTO locations_links (FirstLocationID, SecondLocationID, MoveDuration) VALUES (?, ?, ?)',
+                               [locations[j][0], locations[i][0], round(distance)])
                 connect.commit()
-            print(distance)
