@@ -1,4 +1,4 @@
-def create_stats_text(person_info, location_info):
+def create_stats_player_text(person_info, location_info):
     STATS_TEXT = f"Никнейм персонажа: {person_info[0]}\n" \
            f"Уровень: {person_info[1]}\n" \
            f"Максимальное здоровье: {person_info[2]}\n" \
@@ -13,7 +13,19 @@ def create_stats_text(person_info, location_info):
     return STATS_TEXT
 
 
+def create_stats_location_text(locations):
+    STATS_TEXT = ""
+    for location in locations:
+        cur_location_text = f"Название: {location[0]}\n" \
+                            f"Тип: {location[1]}\n" \
+                            f"Координата: ({location[2]}, {location[3]}) \n\n"
+        STATS_TEXT += cur_location_text
+    return STATS_TEXT
+
+
 UNKNOWN_TEST = 'Я не знаю такую команду'
-HELPER_TEXT = '/help - помощь\n'
+HELPER_TEXT = '/help - помощь\n' \
+              '/stats_player - прислать статистику игрока\n' \
+              '/stats_cities - прислать описание городов\n'
 HELLO_TEXT = 'Привет!\n' \
              'Подробности: /help\n'

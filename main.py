@@ -27,6 +27,8 @@ cursor_items_links = connect_items_links.cursor()
 
 cursor_locations.execute('INSERT INTO locations (LocationName) VALUES (?)', ['center'])
 connect_locations.commit()
+cursor_locations.execute('INSERT INTO locations (LocationName, XCoord, YCoord) VALUES (?, ?, ?)', ['Novigrad', 0, 2])
+connect_locations.commit()
 
 logging.basicConfig(level=logging.INFO)
 bot = Bot(token=TOKEN)
@@ -46,14 +48,21 @@ async def start(message: types.Message):
     await message.answer(text=utils.HELLO_TEXT)
 
 
-@dp.message_handler(commands=["stats"])
+@dp.message_handler(commands=["stats_player"])
 async def start(message: types.Message):
     cursor_person.execute(f"select Nickname, LEVEL, HP, CurHP, Money, Attack, MagicAttack, XP, Armour, MagicArmour, "
                           f"LocationID from person where ChatId = {message.chat.id}")
     person_info = list(cursor_person.fetchall()[0])
     cursor_locations.execute(f'select LocationName, LocationType from locations where LocationID = {person_info[10]}')
     location_info = list(cursor_locations.fetchall()[0])
-    await message.answer(text=utils.create_stats_text(person_info, location_info))
+    await message.answer(text=utils.create_stats_player_text(person_info, location_info))
+
+
+@dp.message_handler(commands=["stats_cities"])
+async def start(message: types.Message):
+    cursor_locations.execute(f'select LocationName, LocationType, XCoord, YCoord from locations')
+    locations = list(cursor_locations.fetchall())
+    await message.answer(text=utils.create_stats_location_text(locations))
 
 
 @dp.message_handler()
