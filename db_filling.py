@@ -65,6 +65,8 @@ def fill_items_sellers():
     connect.commit()
     cursor.execute('INSERT INTO items_sellers (LocationID, ItemID) VALUES (?, ?)', [3, 7])
     connect.commit()
+    cursor.execute('INSERT INTO items_sellers (LocationID, ItemID) VALUES (?, ?)', [3, 10])
+    connect.commit()
     # оружие
     cursor.execute('INSERT INTO items_sellers (LocationID, ItemID) VALUES (?, ?)', [2, 8])
     connect.commit()

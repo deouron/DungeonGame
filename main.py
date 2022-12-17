@@ -203,6 +203,8 @@ async def buy_item_White_Orchard(call: types.CallbackQuery):
     markup.row(item)
     item = types.InlineKeyboardButton(f"5", callback_data=f"buy_7")
     markup.row(item)
+    item = types.InlineKeyboardButton(f"6", callback_data=f"buy_10")
+    markup.row(item)
     await call.message.answer(text=commands.create_items_text(cursor, call.message) + "\nВыбери предмет для покупки",
                               reply_markup=markup)
 

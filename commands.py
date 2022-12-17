@@ -155,6 +155,10 @@ def sell_item(item_id, cursor, connect, message):
     cursor.execute(f'select quantity from items_links where UserID = {message.chat.id} and ItemID = {item_id}')
     quantity = cursor.fetchall()
     if len(quantity) != 0 and quantity[0][0] > 0:
+        cursor.execute(f'select IsActive from items_links where UserID = {message.chat.id} and ItemID = {item_id}')
+        IsActive = cursor.fetchall()[0][0]
+        if IsActive == 1:
+            return "Перед продажей нужно снять предмет!"
         cursor.execute(f'select Money from person where UserID = {message.chat.id}')
         money = cursor.fetchall()[0][0]
         cursor.execute(f'select CostToSale from items where ItemID = {item_id}')
@@ -195,4 +199,3 @@ def use_item(item_id, cursor, connect, message):
                    f'ItemID = {active}')
     connect.commit()
     return "Предмет используется!"
-
