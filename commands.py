@@ -122,8 +122,8 @@ def create_items_text(cursor, message):
 def buy_item(item_id, cursor, connect, message):
     cursor.execute(f'select Money, Level from person where UserID = {message.chat.id}')
     money, Level = cursor.fetchall()[0]
-    cursor.execute(f'select Cost, ReqLevel from items where ItemID = {item_id}')
-    item_cost, ReqLevel = cursor.fetchall()[0]
+    cursor.execute(f'select Cost, ReqLevel, ItemType from items where ItemID = {item_id}')
+    item_cost, ReqLevel, ItemType = cursor.fetchall()[0]
     if ReqLevel > Level:
         return "Недостаточный уровень!"
     if item_cost > money:
@@ -138,9 +138,14 @@ def buy_item(item_id, cursor, connect, message):
                        f'where UserID = {message.chat.id} and ItemID = {item_id}')
         connect.commit()
     else:
-        cursor.execute('INSERT INTO items_links (UserID, ItemID, quantity, IsActive)'
-                       'values (?, ?, ?, ?)',
-                       [message.chat.id, 1, 2, 1])
+        if ItemType == 'potion':
+            cursor.execute('INSERT INTO items_links (UserID, ItemID, quantity, IsActive)'
+                           'values (?, ?, ?, ?)',
+                           [message.chat.id, item_id, 1, 1])  # зелья сразу используем, остальное надо надеть
+        else:
+            cursor.execute('INSERT INTO items_links (UserID, ItemID, quantity, IsActive)'
+                           'values (?, ?, ?, ?)',
+                           [message.chat.id, item_id, 1, 0])
         connect.commit()
     return "Успешная покупка!"
 

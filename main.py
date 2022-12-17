@@ -157,11 +157,11 @@ async def buy_item_White_Orchard(call: types.CallbackQuery):
     markup.row(item)
     item = types.InlineKeyboardButton(f"2", callback_data=f"buy_4")
     markup.row(item)
-    item = types.InlineKeyboardButton(f"2", callback_data=f"buy_5")
+    item = types.InlineKeyboardButton(f"3", callback_data=f"buy_5")
     markup.row(item)
-    item = types.InlineKeyboardButton(f"2", callback_data=f"buy_6")
+    item = types.InlineKeyboardButton(f"4", callback_data=f"buy_6")
     markup.row(item)
-    item = types.InlineKeyboardButton(f"2", callback_data=f"buy_7")
+    item = types.InlineKeyboardButton(f"5", callback_data=f"buy_7")
     markup.row(item)
     await call.message.answer(text=commands.create_items_text(cursor, call.message) + "\nВыбери предмет для покупки",
                               reply_markup=markup)
@@ -174,11 +174,11 @@ async def sell_item_Novigrad(call: types.CallbackQuery):
     markup.row(item)
     item = types.InlineKeyboardButton(f"2", callback_data=f"sell_4")
     markup.row(item)
-    item = types.InlineKeyboardButton(f"2", callback_data=f"sell_5")
+    item = types.InlineKeyboardButton(f"3", callback_data=f"sell_5")
     markup.row(item)
-    item = types.InlineKeyboardButton(f"2", callback_data=f"sell_6")
+    item = types.InlineKeyboardButton(f"4", callback_data=f"sell_6")
     markup.row(item)
-    item = types.InlineKeyboardButton(f"2", callback_data=f"sell_7")
+    item = types.InlineKeyboardButton(f"5", callback_data=f"sell_7")
     markup.row(item)
     await call.message.answer(text=commands.create_items_text(cursor, call.message) + "\nВыбери предмет для продажи",
                               reply_markup=markup)
@@ -191,13 +191,13 @@ async def buy_item(call: types.CallbackQuery):
 
 
 @dp.callback_query_handler(text_contains=["sell_"])
-async def buy_item(call: types.CallbackQuery):
+async def sell_item(call: types.CallbackQuery):
     item_id = call.data.replace('sell_', '')
     await call.message.answer(text=commands.sell_item(item_id, cursor, connect, call.message))
 
 
 @dp.message_handler(commands=["go"])
-async def inventory(message: types.Message):
+async def go(message: types.Message):
     cursor.execute(f'select LocationID from person where UserID = {message.chat.id}')
     cur_location = list(cursor.fetchall()[0])[0]
     cursor.execute(f'select SecondLocationID, MoveDuration from locations_links where FirstLocationID = {cur_location}')
