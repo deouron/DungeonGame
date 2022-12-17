@@ -87,7 +87,7 @@ async def put_on(message: types.Message):
         cursor.execute(f'select ItemID from items_links where UserID = {message.chat.id} and IsActive = 0')
         user_items = list(cursor.fetchall())
         if len(user_items) == 0:
-            await message.answer(text=utils.EMPTY_INVENTORY_TEXT + 'или все предметы используются')
+            await message.answer(text=utils.EMPTY_INVENTORY_TEXT + utils.OR_ALL_ITEMS_ARE_USED_TEXT)
         else:
             markup = types.InlineKeyboardMarkup(row_width=4)
             can_put_on = False
@@ -101,11 +101,9 @@ async def put_on(message: types.Message):
                 item = types.InlineKeyboardButton(f"{item[0]}", callback_data=f"use_{item[0]}")
                 markup.row(item)
             if not can_put_on:
-                await message.answer(text=utils.NO_GARMENTS_TEXT + 'или все предметы используются')
+                await message.answer(text=utils.NO_GARMENTS_TEXT + utils.OR_ALL_ITEMS_ARE_USED_TEXT)
             else:
-                await message.answer(text=commands.create_garments_text(cursor, message) + "\n" +
-                                          'Выбери предмет, который хочешь использовать (старый предмет такого же '
-                                          'типа станет неактивным)',
+                await message.answer(text=commands.create_garments_text(cursor, message) + "\n" + utils.CHOOSE_ITEM_TO_USE_TEXT,
                                      reply_markup=markup)
 
 
@@ -153,7 +151,7 @@ async def buy_item_Kaer_Morhen(call: types.CallbackQuery):
     markup.row(item)
     item = types.InlineKeyboardButton(f"2", callback_data=f"buy_2")
     markup.row(item)
-    await call.message.answer(text=commands.create_items_text(cursor, call.message) + "\nВыбери предмет для покупки",
+    await call.message.answer(text=commands.create_items_text(cursor, call.message) + "\n" + utils.CHOOSE_ITEM_TO_BUY_TEXT,
                               reply_markup=markup)
 
 
@@ -164,7 +162,7 @@ async def sell_item_Kaer_Morhen(call: types.CallbackQuery):
     markup.row(item)
     item = types.InlineKeyboardButton(f"2", callback_data=f"sell_2")
     markup.row(item)
-    await call.message.answer(text=commands.create_items_text(cursor, call.message) + "\nВыбери предмет для продажи",
+    await call.message.answer(text=commands.create_items_text(cursor, call.message) + "\n" + utils.CHOOSE_ITEM_TO_SELL_TEXT,
                               reply_markup=markup)
 
 
@@ -175,7 +173,7 @@ async def buy_item_Novigrad(call: types.CallbackQuery):
     markup.row(item)
     item = types.InlineKeyboardButton(f"2", callback_data=f"buy_9")
     markup.row(item)
-    await call.message.answer(text=commands.create_items_text(cursor, call.message) + "\nВыбери предмет для покупки",
+    await call.message.answer(text=commands.create_items_text(cursor, call.message) + "\n" + utils.CHOOSE_ITEM_TO_BUY_TEXT,
                               reply_markup=markup)
 
 
@@ -186,7 +184,7 @@ async def sell_item_Novigrad(call: types.CallbackQuery):
     markup.row(item)
     item = types.InlineKeyboardButton(f"2", callback_data=f"sell_9")
     markup.row(item)
-    await call.message.answer(text=commands.create_items_text(cursor, call.message) + "\nВыбери предмет для продажи",
+    await call.message.answer(text=commands.create_items_text(cursor, call.message) + "\n" + utils.CHOOSE_ITEM_TO_SELL_TEXT,
                               reply_markup=markup)
 
 
@@ -205,7 +203,7 @@ async def buy_item_White_Orchard(call: types.CallbackQuery):
     markup.row(item)
     item = types.InlineKeyboardButton(f"6", callback_data=f"buy_10")
     markup.row(item)
-    await call.message.answer(text=commands.create_items_text(cursor, call.message) + "\nВыбери предмет для покупки",
+    await call.message.answer(text=commands.create_items_text(cursor, call.message) + "\n" + utils.CHOOSE_ITEM_TO_BUY_TEXT,
                               reply_markup=markup)
 
 
@@ -222,7 +220,7 @@ async def sell_item_Novigrad(call: types.CallbackQuery):
     markup.row(item)
     item = types.InlineKeyboardButton(f"5", callback_data=f"sell_7")
     markup.row(item)
-    await call.message.answer(text=commands.create_items_text(cursor, call.message) + "\nВыбери предмет для продажи",
+    await call.message.answer(text=commands.create_items_text(cursor, call.message) + "\n" + utils.CHOOSE_ITEM_TO_SELL_TEXT,
                               reply_markup=markup)
 
 
