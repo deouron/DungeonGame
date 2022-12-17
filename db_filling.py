@@ -34,12 +34,17 @@ def give_open_bonus(message):
 def fill_locations():
     connect = sqlite3.connect('dbs/data.db', check_same_thread=False)
     cursor = connect.cursor()
-    cursor.execute('INSERT INTO locations (LocationName) VALUES (?)', ['Center'])
+    cursor.execute('INSERT INTO locations (LocationName) VALUES (?)', ['Kaer_Morhen'])
     connect.commit()
-    cursor.execute('INSERT INTO locations (LocationName, XCoord, YCoord) VALUES (?, ?, ?)', ['Novigrad', 0, 2])
+    cursor.execute('INSERT INTO locations (LocationName, XCoord, YCoord) VALUES (?, ?, ?)', ['Novigrad', 0, 10])
+    connect.commit()
+    cursor.execute('INSERT INTO locations (LocationName, XCoord, YCoord) VALUES (?, ?, ?)', ['White_Orchard', -5, -5])
     connect.commit()
     cursor.execute('INSERT INTO locations (LocationName, LocationType, XCoord, YCoord) VALUES (?, ?, ?, ?)',
-                   ['Skellige', 'dungeon', 2, 0])
+                   ['Crones', 'dungeon', 8, 1])
+    connect.commit()
+    cursor.execute('INSERT INTO locations (LocationName, LocationType, XCoord, YCoord) VALUES (?, ?, ?, ?)',
+                   ['Skellige', 'dungeon', 4, 0])
     connect.commit()
 
 

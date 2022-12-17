@@ -49,3 +49,5 @@ def create_inventory_text(cursor, message):
             cur_text += "Статус: не используется\n\n"
         text += cur_text
     return text
+
+

@@ -104,3 +104,16 @@ def create_items_links_db():
             IsActive int DEFAULT 0
             );""")
     connect.commit()
+
+
+def create_items_sellers_db():
+    connect = sqlite3.connect('dbs/data.db', check_same_thread=False)
+    cursor = connect.cursor()
+    cursor.execute("drop table if exists items_sellers")
+    connect.commit()
+    cursor.execute("""create table items_sellers(
+            ID integer primary key autoincrement,
+            LocationID int DEFAULT 0,
+            ItemID int DEFAULT 0
+            );""")
+    connect.commit()

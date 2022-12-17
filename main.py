@@ -8,7 +8,7 @@ from aiogram import Bot, Dispatcher, types
 import time
 from secret import TOKEN
 from db_creation import create_locations_db, create_mobs_db, create_person_db, create_items_db, create_items_links_db, \
-    create_locations_links_db
+    create_locations_links_db, create_items_sellers_db
 from db_filling import fill_items, fill_locations, give_open_bonus, fill_location_reachability
 import utils
 import commands
@@ -22,6 +22,7 @@ create_mobs_db()
 create_person_db()
 create_items_db()
 create_items_links_db()
+create_items_sellers_db()
 
 fill_items()
 fill_locations()
@@ -70,6 +71,11 @@ async def inventory(message: types.Message):
     await message.answer(text=commands.create_inventory_text(cursor, message))
 
 
+@dp.message_handler(commands=["items"])
+async def inventory(message: types.Message):
+    await message.answer(text=commands.create_inventory_text(cursor, message))
+
+
 @dp.message_handler(commands=["go"])
 async def inventory(message: types.Message):
     cursor.execute(f'select LocationID from person where UserID = {message.chat.id}')
@@ -94,7 +100,7 @@ async def move_to_Novigrad(call: types.CallbackQuery):
     cursor.execute(f'select MoveDuration from locations_links where FirstLocationID = {cur_location} and '
                    f'SecondLocationID = {novigrad_id}')
     duration = list(cursor.fetchall()[0])[0]
-    await call.message.answer(text="Идём в Novigrad...")
+    await call.message.answer(text=f"Идём в Novigrad. Пусть займёт {duration}")
     await call.message.answer(text=str(duration))
     for i in range(duration - 1, -1, -1):
         time.sleep(1)
@@ -104,19 +110,41 @@ async def move_to_Novigrad(call: types.CallbackQuery):
     cursor.execute(f'update person set LocationID = {novigrad_id}, CurHP = {max(max_hp, cur_hp)} '
                    f'where UserID = {call.message.chat.id}')
     connect.commit()
-    await call.message.answer(text="Пришли в Novigrad, здоровье восстановлено!")
+    await call.message.answer(text="Пришли в Novigrad, тут можно купить оружие, здоровье восстановлено!")
 
 
-@dp.callback_query_handler(text_contains=["move_to_Center"])
-async def move_to_Center(call: types.CallbackQuery):
+@dp.callback_query_handler(text_contains=["move_to_White_Orchard"])
+async def move_to_White_Orchard(call: types.CallbackQuery):
     cursor.execute(f'select LocationID from person where UserID = {call.message.chat.id}')
     cur_location = list(cursor.fetchall()[0])[0]
-    cursor.execute(f'select LocationID from locations where LocationName = "Center"')
+    cursor.execute(f'select LocationID from locations where LocationName = "White_Orchard"')
+    White_Orchard_id = list(cursor.fetchall()[0])[0]
+    cursor.execute(f'select MoveDuration from locations_links where FirstLocationID = {cur_location} and '
+                   f'SecondLocationID = {White_Orchard_id}')
+    duration = list(cursor.fetchall()[0])[0]
+    await call.message.answer(text=f"Идём в White_Orchard. Пусть займёт {duration}")
+    await call.message.answer(text=str(duration))
+    for i in range(duration - 1, -1, -1):
+        time.sleep(1)
+        await call.message.answer(text=str(i))
+    cursor.execute(f'select HP, CurHP from person where UserID = {call.message.chat.id}')
+    max_hp, cur_hp = cursor.fetchall()[0]
+    cursor.execute(f'update person set LocationID = {White_Orchard_id}, CurHP = {max(max_hp, cur_hp)} '
+                   f'where UserID = {call.message.chat.id}')
+    connect.commit()
+    await call.message.answer(text="Пришли в White_Orchard, тут можно купить броню, здоровье восстановлено!")
+
+
+@dp.callback_query_handler(text_contains=["move_to_Kaer_Morhen"])
+async def move_to_Kaer_Morhen(call: types.CallbackQuery):
+    cursor.execute(f'select LocationID from person where UserID = {call.message.chat.id}')
+    cur_location = list(cursor.fetchall()[0])[0]
+    cursor.execute(f'select LocationID from locations where LocationName = "Kaer_Morhen"')
     center_id = list(cursor.fetchall()[0])[0]
     cursor.execute(f'select MoveDuration from locations_links where FirstLocationID = {cur_location} and '
                    f'SecondLocationID = {center_id}')
     duration = list(cursor.fetchall()[0])[0]
-    await call.message.answer(text="Идём в Center...")
+    await call.message.answer(text=f"Идём в Kaer_Morhen. Пусть займёт {duration}")
     await call.message.answer(text=str(duration))
     for i in range(duration - 1, -1, -1):
         time.sleep(1)
@@ -126,7 +154,7 @@ async def move_to_Center(call: types.CallbackQuery):
     cursor.execute(f'update person set LocationID = {center_id}, CurHP = {max(max_hp, cur_hp)} '
                    f'where UserID = {call.message.chat.id}')
     connect.commit()
-    await call.message.answer(text="Пришли в Center, здоровье восстановлено!")
+    await call.message.answer(text="Пришли в Kaer_Morhen, тут можно купить зелья, здоровье восстановлено!")
 
 
 @dp.message_handler()
