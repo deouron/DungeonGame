@@ -76,3 +76,18 @@ def create_items_db():
             ReqLevel int DEFAULT 0
             );""")
     connect.commit()
+
+
+def create_items_links_db():
+    connect = sqlite3.connect('dbs/items_links.db', check_same_thread=False)
+    cursor = connect.cursor()
+    cursor.execute("drop table if exists items_links;")
+    connect.commit()
+    cursor.execute("""create table items_links(
+            ID integer primary key autoincrement,
+            UserID int DEFAULT 0,
+            ItemID int DEFAULT 0,
+            quantity int DEFAULT 0,
+            IsActive int DEFAULT 0
+            );""")
+    connect.commit()
