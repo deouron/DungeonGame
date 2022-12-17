@@ -107,7 +107,7 @@ def create_items_text(cursor, message):
         cursor.execute(f'select ItemType, Cost, CostToSale, HP, Mana,  Attack, MagicAttack, Armour, MagicArmour, '
                        f'ReqLevel from items where ItemID = {item[0]}')
         cur_item = list(cursor.fetchall()[0])
-        cur_text = f"{str(cnt)}\n" \
+        cur_text = f"№{str(cnt)}\n" \
                    f"Тип: {cur_item[0]}\n" \
                    f"Цена для покупки: {cur_item[1]} (для продажи {cur_item[2]})\n" \
                    f"Бонусы: здоровье +{cur_item[3]}, мана +{cur_item[4]}, атака +{cur_item[5]}, " \

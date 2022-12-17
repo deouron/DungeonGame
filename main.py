@@ -90,10 +90,24 @@ async def inventory(message: types.Message):
         item = types.InlineKeyboardButton(f"Продать", callback_data=f"sell_item_Kaer_Morhen")
         markup.row(item)
         await message.answer(text=commands.create_items_text(cursor, message), reply_markup=markup)
+    elif location_name == 'Novigrad':
+        markup = types.InlineKeyboardMarkup(row_width=4)
+        item = types.InlineKeyboardButton(f"Купить", callback_data=f"buy_item_Novigrad")
+        markup.row(item)
+        item = types.InlineKeyboardButton(f"Продать", callback_data=f"sell_item_Novigrad")
+        markup.row(item)
+        await message.answer(text=commands.create_items_text(cursor, message), reply_markup=markup)
+    elif location_name == 'White_Orchard':
+        markup = types.InlineKeyboardMarkup(row_width=4)
+        item = types.InlineKeyboardButton(f"Купить", callback_data=f"buy_item_White_Orchard")
+        markup.row(item)
+        item = types.InlineKeyboardButton(f"Продать", callback_data=f"sell_item_White_Orchard")
+        markup.row(item)
+        await message.answer(text=commands.create_items_text(cursor, message), reply_markup=markup)
 
 
 @dp.callback_query_handler(text_contains=["buy_item_Kaer_Morhen"])
-async def buy_item(call: types.CallbackQuery):
+async def buy_item_Kaer_Morhen(call: types.CallbackQuery):
     markup = types.InlineKeyboardMarkup(row_width=4)
     item = types.InlineKeyboardButton(f"1", callback_data=f"buy_1")
     markup.row(item)
@@ -104,11 +118,67 @@ async def buy_item(call: types.CallbackQuery):
 
 
 @dp.callback_query_handler(text_contains=["sell_item_Kaer_Morhen"])
-async def buy_item(call: types.CallbackQuery):
+async def sell_item_Kaer_Morhen(call: types.CallbackQuery):
     markup = types.InlineKeyboardMarkup(row_width=4)
     item = types.InlineKeyboardButton(f"1", callback_data=f"sell_1")
     markup.row(item)
     item = types.InlineKeyboardButton(f"2", callback_data=f"sell_2")
+    markup.row(item)
+    await call.message.answer(text=commands.create_items_text(cursor, call.message) + "\nВыбери предмет для продажи",
+                              reply_markup=markup)
+
+
+@dp.callback_query_handler(text_contains=["buy_item_Novigrad"])
+async def buy_item_Novigrad(call: types.CallbackQuery):
+    markup = types.InlineKeyboardMarkup(row_width=4)
+    item = types.InlineKeyboardButton(f"1", callback_data=f"buy_8")
+    markup.row(item)
+    item = types.InlineKeyboardButton(f"2", callback_data=f"buy_9")
+    markup.row(item)
+    await call.message.answer(text=commands.create_items_text(cursor, call.message) + "\nВыбери предмет для покупки",
+                              reply_markup=markup)
+
+
+@dp.callback_query_handler(text_contains=["sell_item_Novigrad"])
+async def sell_item_Novigrad(call: types.CallbackQuery):
+    markup = types.InlineKeyboardMarkup(row_width=4)
+    item = types.InlineKeyboardButton(f"1", callback_data=f"sell_8")
+    markup.row(item)
+    item = types.InlineKeyboardButton(f"2", callback_data=f"sell_9")
+    markup.row(item)
+    await call.message.answer(text=commands.create_items_text(cursor, call.message) + "\nВыбери предмет для продажи",
+                              reply_markup=markup)
+
+
+@dp.callback_query_handler(text_contains=["buy_item_White_Orchard"])
+async def buy_item_White_Orchard(call: types.CallbackQuery):
+    markup = types.InlineKeyboardMarkup(row_width=4)
+    item = types.InlineKeyboardButton(f"1", callback_data=f"buy_3")
+    markup.row(item)
+    item = types.InlineKeyboardButton(f"2", callback_data=f"buy_4")
+    markup.row(item)
+    item = types.InlineKeyboardButton(f"2", callback_data=f"buy_5")
+    markup.row(item)
+    item = types.InlineKeyboardButton(f"2", callback_data=f"buy_6")
+    markup.row(item)
+    item = types.InlineKeyboardButton(f"2", callback_data=f"buy_7")
+    markup.row(item)
+    await call.message.answer(text=commands.create_items_text(cursor, call.message) + "\nВыбери предмет для покупки",
+                              reply_markup=markup)
+
+
+@dp.callback_query_handler(text_contains=["sell_item_White_Orchard"])
+async def sell_item_Novigrad(call: types.CallbackQuery):
+    markup = types.InlineKeyboardMarkup(row_width=4)
+    item = types.InlineKeyboardButton(f"1", callback_data=f"sell_3")
+    markup.row(item)
+    item = types.InlineKeyboardButton(f"2", callback_data=f"sell_4")
+    markup.row(item)
+    item = types.InlineKeyboardButton(f"2", callback_data=f"sell_5")
+    markup.row(item)
+    item = types.InlineKeyboardButton(f"2", callback_data=f"sell_6")
+    markup.row(item)
+    item = types.InlineKeyboardButton(f"2", callback_data=f"sell_7")
     markup.row(item)
     await call.message.answer(text=commands.create_items_text(cursor, call.message) + "\nВыбери предмет для продажи",
                               reply_markup=markup)
@@ -150,7 +220,7 @@ async def move_to_Novigrad(call: types.CallbackQuery):
     cursor.execute(f'select MoveDuration from locations_links where FirstLocationID = {cur_location} and '
                    f'SecondLocationID = {novigrad_id}')
     duration = list(cursor.fetchall()[0])[0]
-    await call.message.answer(text=f"Идём в Novigrad. Пусть займёт {duration} секунд")
+    await call.message.answer(text=f"Идём в Novigrad. Путь займёт {duration} секунд")
     await call.message.answer(text=str(duration))
     for i in range(duration - 1, -1, -1):
         time.sleep(1)
@@ -172,7 +242,7 @@ async def move_to_White_Orchard(call: types.CallbackQuery):
     cursor.execute(f'select MoveDuration from locations_links where FirstLocationID = {cur_location} and '
                    f'SecondLocationID = {White_Orchard_id}')
     duration = list(cursor.fetchall()[0])[0]
-    await call.message.answer(text=f"Идём в White_Orchard. Пусть займёт {duration} секунд")
+    await call.message.answer(text=f"Идём в White_Orchard. Путь займёт {duration} секунд")
     await call.message.answer(text=str(duration))
     for i in range(duration - 1, -1, -1):
         time.sleep(1)
@@ -195,7 +265,7 @@ async def move_to_Kaer_Morhen(call: types.CallbackQuery):
     cursor.execute(f'select MoveDuration from locations_links where FirstLocationID = {cur_location} and '
                    f'SecondLocationID = {center_id}')
     duration = list(cursor.fetchall()[0])[0]
-    await call.message.answer(text=f"Идём в Kaer_Morhen. Пусть займёт {duration} секунд")
+    await call.message.answer(text=f"Идём в Kaer_Morhen. Псть займёт {duration} секунд")
     await call.message.answer(text=str(duration))
     for i in range(duration - 1, -1, -1):
         time.sleep(1)
