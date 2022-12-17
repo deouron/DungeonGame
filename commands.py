@@ -1,3 +1,6 @@
+import utils
+
+
 def create_stats_player_text(person_info, location_info):
     STATS_TEXT = f"Никнейм персонажа: {person_info[0]}\n" \
                  f"Уровень: {person_info[1]}\n" \
@@ -30,8 +33,7 @@ def create_inventory_text(cursor, message):
     cursor.execute(f'select ItemID, quantity, IsActive from items_links where UserID = {message.chat.id}')
     user_items = list(cursor.fetchall())
     if len(user_items) == 0:
-        text = "В инвентаре пусто"
-        return text
+        return utils.EMPTY_INVENTORY_TEXT
     text = "Твой инвентарь:\n\n"
     for item in user_items:
         item = list(item)
@@ -41,7 +43,7 @@ def create_inventory_text(cursor, message):
         cur_item = list(cursor.fetchall()[0])
         cur_text = f"Тип: {cur_item[2]}\n" \
                    f"Количество: {item[1]}\n" \
-                   f"Цена для покупки: {cur_item[0]} (для продажи {cur_item[1]})\n" \
+                   f"Цена покупки: {cur_item[0]} (продажи {cur_item[1]})\n" \
                    f"Бонусы: здоровье +{cur_item[3]}, мана +{cur_item[4]}, атака +{cur_item[5]}, " \
                    f"магическая атака +{cur_item[6]}, броня +{cur_item[7]}, магическая броня +{cur_item[8]}\n" \
                    f"Нужный уровень для ношения предмета: {cur_item[9]}\n"
@@ -57,8 +59,7 @@ def create_garments_text(cursor, message):
     cursor.execute(f'select ItemID, quantity, IsActive from items_links where UserID = {message.chat.id}')
     user_items = list(cursor.fetchall())
     if len(user_items) == 0:
-        text = "В инвентаре пусто"
-        return text
+        return utils.EMPTY_INVENTORY_TEXT
     can_put_on = False
     text = "Твой инвентарь:\n\n"
     for item in user_items:
@@ -73,7 +74,7 @@ def create_garments_text(cursor, message):
         cur_text = f"Id: {item[0]}\n" \
                    f"Тип: {cur_item[2]}\n" \
                    f"Количество: {item[1]}\n" \
-                   f"Цена для покупки: {cur_item[0]} (для продажи {cur_item[1]})\n" \
+                   f"Цена покупки: {cur_item[0]} (продажи {cur_item[1]})\n" \
                    f"Бонусы: здоровье +{cur_item[3]}, мана +{cur_item[4]}, атака +{cur_item[5]}, " \
                    f"магическая атака +{cur_item[6]}, броня +{cur_item[7]}, магическая броня +{cur_item[8]}\n" \
                    f"Нужный уровень для ношения предмета: {cur_item[9]}\n"
@@ -84,7 +85,7 @@ def create_garments_text(cursor, message):
         text += cur_text
     if can_put_on:
         return text
-    return "В инвентаре нет оружия и одежды"
+    return utils.NO_GARMENTS_TEXT
 
 
 def create_items_text(cursor, message):
@@ -109,7 +110,7 @@ def create_items_text(cursor, message):
         cur_item = list(cursor.fetchall()[0])
         cur_text = f"№{str(cnt)}\n" \
                    f"Тип: {cur_item[0]}\n" \
-                   f"Цена для покупки: {cur_item[1]} (для продажи {cur_item[2]})\n" \
+                   f"Цена покупки: {cur_item[1]} (продажи {cur_item[2]})\n" \
                    f"Бонусы: здоровье +{cur_item[3]}, мана +{cur_item[4]}, атака +{cur_item[5]}, " \
                    f"магическая атака +{cur_item[6]}, броня +{cur_item[7]}, магическая броня +{cur_item[8]}\n" \
                    f"Нужный уровень для ношения предмета: {cur_item[9]}\n" \
@@ -171,3 +172,27 @@ def sell_item(item_id, cursor, connect, message):
     else:
         return "Нет предметов для продажи!"
     return "Успешная продажа!"
+
+
+def use_item(item_id, cursor, connect, message):
+    cursor.execute(f'select ItemType from items where ItemID = {item_id}')
+    ItemType = cursor.fetchall()[0][0]
+    cursor.execute(f'select ItemID from items_links where UserID = {message.chat.id} and IsActive = 1')
+    active = cursor.fetchall()
+    is_exist = False
+    for item in active:
+        cursor.execute(f'select ItemType from items where ItemID = {item[0]}')
+        if cursor.fetchall()[0][0] == ItemType:
+            active = item[0]
+            is_exist = True
+            break
+    cursor.execute(f'update items_links set IsActive = 1 where UserID = {message.chat.id} and '
+                   f'ItemID = {item_id}')
+    connect.commit()
+    if not is_exist:
+        return "Предмет используется!"
+    cursor.execute(f'update items_links set IsActive = 0 where UserID = {message.chat.id} and '
+                   f'ItemID = {active}')
+    connect.commit()
+    return "Предмет используется!"
+

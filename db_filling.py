@@ -22,8 +22,8 @@ def fill_items():
     connect.commit()  # броня2 id=4
     cursor.execute('INSERT INTO items (Cost, CostToSale, ItemType, Armour,MagicArmour, ReqLevel) '
                    'VALUES (?, ?, ?, ?, ?, ?)',
-                   [10, 7, 'helmet', 2, 1, 1])
-    connect.commit()  # шлем id=5
+                   [10, 7, 'helmet', 5, 3, 1])
+    connect.commit()  # шлем1 id=5
     cursor.execute('INSERT INTO items (Cost, CostToSale, ItemType, Armour,MagicArmour, ReqLevel) '
                    'VALUES (?, ?, ?, ?, ?, ?)',
                    [5, 3, 'boots', 2, 1, 1])
@@ -40,6 +40,10 @@ def fill_items():
                    'VALUES (?, ?, ?, ?, ?)',
                    [3, 2, 'weapon', 10, 1])
     connect.commit()  # оружие2 id=9
+    cursor.execute('INSERT INTO items (Cost, CostToSale, ItemType, Armour,MagicArmour, ReqLevel) '
+                   'VALUES (?, ?, ?, ?, ?, ?)',
+                   [5, 3, 'helmet', 2, 1, 1])
+    connect.commit()  # шлем2 id=10
 
 
 def fill_items_sellers():
@@ -126,3 +130,7 @@ def give_open_bonus(message):
                    'values (?, ?, ?, ?)',
                    [message.chat.id, 3, 1, 1])
     connect.commit()  # бонусная броня
+    cursor.execute('INSERT INTO items_links (UserID, ItemID, quantity, IsActive)'
+                   'values (?, ?, ?, ?)',
+                   [message.chat.id, 10, 1, 1])
+    connect.commit()  # бонусный шлем

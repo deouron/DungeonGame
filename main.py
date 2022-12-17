@@ -75,6 +75,46 @@ async def garments(message: types.Message):
     await message.answer(text=commands.create_garments_text(cursor, message))
 
 
+@dp.message_handler(commands=["put_on"])
+async def put_on(message: types.Message):
+    cursor.execute(f'select LocationID from person where UserID = {message.chat.id}')
+    location_id = cursor.fetchall()[0][0]
+    cursor.execute(f'select LocationType from locations where LocationID = {location_id}')
+    location_type = cursor.fetchall()[0][0]
+    if location_type == "dungeon":
+        await message.answer(text=utils.FORBIDDEN_TEXT)
+    else:
+        cursor.execute(f'select ItemID from items_links where UserID = {message.chat.id} and IsActive = 0')
+        user_items = list(cursor.fetchall())
+        if len(user_items) == 0:
+            await message.answer(text=utils.EMPTY_INVENTORY_TEXT + 'или все предметы используются')
+        else:
+            markup = types.InlineKeyboardMarkup(row_width=4)
+            can_put_on = False
+            for item in user_items:
+                cursor.execute(f'select ItemType from items where ItemID = {item[0]}')
+                cur_item = cursor.fetchall()[0][0]
+                if cur_item[0] == 'potion':
+                    continue
+                can_put_on = True
+                markup = types.InlineKeyboardMarkup(row_width=4)
+                item = types.InlineKeyboardButton(f"{item[0]}", callback_data=f"use_{item[0]}")
+                markup.row(item)
+            if not can_put_on:
+                await message.answer(text=utils.NO_GARMENTS_TEXT + 'или все предметы используются')
+            else:
+                await message.answer(text=commands.create_garments_text(cursor, message) + "\n" +
+                                          'Выбери предмет, который хочешь использовать (старый предмет такого же '
+                                          'типа станет неактивным)',
+                                     reply_markup=markup)
+
+
+@dp.callback_query_handler(text_contains=["use_"])
+async def buy_item(call: types.CallbackQuery):
+    item_id = call.data.replace('use_', '')
+    await call.message.answer(text=commands.use_item(item_id, cursor, connect, call.message))
+
+
 @dp.message_handler(commands=["items"])
 async def inventory(message: types.Message):
     cursor.execute(f'select LocationID from person where UserID = {message.chat.id}')
@@ -286,6 +326,7 @@ async def unknown_message(message: types.Message):
 
 async def main():
     await dp.start_polling(bot)
+
 
 if __name__ == "__main__":
     asyncio.run(main())
