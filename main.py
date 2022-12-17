@@ -25,6 +25,9 @@ cursor_items = connect_items.cursor()
 connect_items_links = sqlite3.connect('dbs/items_links.db', check_same_thread=False)
 cursor_items_links = connect_items_links.cursor()
 
+cursor_locations.execute('INSERT INTO locations (LocationName) VALUES (?)', ['center'])
+connect_locations.commit()
+
 logging.basicConfig(level=logging.INFO)
 bot = Bot(token=TOKEN)
 dp = Dispatcher(bot)
@@ -37,10 +40,20 @@ async def start(message: types.Message):
 
 @dp.message_handler(commands=["start"])
 async def start(message: types.Message):
-    cursor_person.execute('INSERT INTO person (ChatId, Nickname) VALUES (?, ?);',
+    cursor_person.execute('INSERT INTO person (ChatId, Nickname) VALUES (?, ?)',
                           [message.chat.id, message.from_user.username])
     connect_person.commit()
     await message.answer(text=utils.HELLO_TEXT)
+
+
+@dp.message_handler(commands=["stats"])
+async def start(message: types.Message):
+    cursor_person.execute(f"select Nickname, LEVEL, HP, CurHP, Money, Attack, MagicAttack, XP, Armour, MagicArmour, "
+                          f"LocationID from person where ChatId = {message.chat.id}")
+    person_info = list(cursor_person.fetchall()[0])
+    cursor_locations.execute(f'select LocationName, LocationType from locations where LocationID = {person_info[10]}')
+    location_info = list(cursor_locations.fetchall()[0])
+    await message.answer(text=utils.create_stats_text(person_info, location_info))
 
 
 @dp.message_handler()
