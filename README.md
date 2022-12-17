@@ -1,4 +1,5 @@
-# DungeonGame
+# TheWitcherGame
+## @dungeon_game_bot
 
 Будем делать небольшую асинхронную текстовую игру в Телеге!
 
