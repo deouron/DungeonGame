@@ -9,7 +9,7 @@ def create_stats_player_text(person_info, location_info):
                  f"Опыт: {person_info[7]}/100\n" \
                  f"Базовая броня персонажа: {person_info[8]}\n" \
                  f"Базовая магическая броня персонажа: {person_info[9]}\n" \
-                 f"Текущая локация: {location_info[0]}, тип: {location_info[1]}"
+                 f"Текущая локация: {location_info[0]} (тип {location_info[1]})"
     return STATS_TEXT
 
 

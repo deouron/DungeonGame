@@ -5,8 +5,9 @@ import asyncio
 import logging
 from aiogram import Bot, Dispatcher, types
 from secret import TOKEN
-from db_creation import create_locations_db, create_mobs_db, create_person_db, create_items_db, create_items_links_db
-from db_filling import fill_items, fill_locations
+from db_creation import create_locations_db, create_mobs_db, create_person_db, create_items_db, create_items_links_db, \
+    create_locations_links_db
+from db_filling import fill_items, fill_locations, give_open_bonus, fill_location_reachability
 import utils
 import commands
 
@@ -14,6 +15,7 @@ connect = sqlite3.connect('dbs/data.db', check_same_thread=False)
 cursor = connect.cursor()
 
 create_locations_db()
+create_locations_links_db()
 create_mobs_db()
 create_person_db()
 create_items_db()
@@ -21,6 +23,7 @@ create_items_links_db()
 
 fill_items()
 fill_locations()
+fill_location_reachability()
 
 logging.basicConfig(level=logging.INFO)
 bot = Bot(token=TOKEN)
@@ -37,14 +40,7 @@ async def start(message: types.Message):
     connect.execute('INSERT INTO person (UserId, Nickname) VALUES (?, ?)',
                     [message.chat.id, message.from_user.username])
     connect.commit()
-    cursor.execute('INSERT INTO items_links (UserID, ItemID, quantity, IsActive)'
-                   'values (?, ?, ?, ?)',
-                   [message.chat.id, 1, 1, 1])
-    connect.commit()  # бонусное зелье-здоровье
-    cursor.execute('INSERT INTO items_links (UserID, ItemID, quantity, IsActive)'
-                   'values (?, ?, ?, ?)',
-                   [message.chat.id, 2, 1, 1])
-    connect.commit()  # бонусное зелье-мана
+    give_open_bonus(message)
     await message.answer(text=utils.HELLO_TEXT)
 
 
@@ -60,8 +56,7 @@ async def stats_player(message: types.Message):
 
 @dp.message_handler(commands=["stats_locations"])
 async def stats_locations(message: types.Message):
-    cursor.execute(f'select LocationName, LocationType, XCoord, YCoord from locations '
-                   f'where LocationType = city')
+    cursor.execute(f'select LocationName, LocationType, XCoord, YCoord from locations')
     locations = list(cursor.fetchall())
     await message.answer(text=commands.create_stats_location_text(locations))
 

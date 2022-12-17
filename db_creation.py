@@ -56,6 +56,19 @@ def create_locations_db():
     connect.commit()
 
 
+def create_locations_links_db():
+    connect = sqlite3.connect('dbs/data.db', check_same_thread=False)
+    cursor = connect.cursor()
+    cursor.execute("drop table if exists locations_links")
+    connect.commit()
+    cursor.execute("""create table locations_links(
+            LocationsLinkID integer primary key autoincrement,
+            FirstLocationID int DEFAULT 0,
+            SecondLocationID int DEFAULT 0
+            );""")
+    connect.commit()
+
+
 def create_items_db():
     connect = sqlite3.connect('dbs/data.db', check_same_thread=False)
     cursor = connect.cursor()
