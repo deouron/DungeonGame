@@ -44,8 +44,10 @@ def create_inventory_text(cursor, message):
         cur_text = f"Тип: {cur_item[2]}\n" \
                    f"Количество: {item[1]}\n" \
                    f"Цена покупки: {cur_item[0]} (продажи {cur_item[1]})\n" \
-                   f"Бонусы: здоровье +{cur_item[3]}, мана +{cur_item[4]}, атака +{cur_item[5]}, " \
-                   f"магическая атака +{cur_item[6]}, броня +{cur_item[7]}, магическая броня +{cur_item[8]}\n" \
+                   f"Бонусы: \n" \
+                   f"    здоровье +{cur_item[3]}, мана +{cur_item[4]},\n" \
+                   f"    атака +{cur_item[5]}, магическая атака +{cur_item[6]},\n" \
+                   f"    броня +{cur_item[7]}, магическая броня +{cur_item[8]}\n" \
                    f"Нужный уровень для ношения предмета: {cur_item[9]}\n"
         if item[2] == 1:
             cur_text += "Статус: используется\n\n"
@@ -75,8 +77,10 @@ def create_garments_text(cursor, message):
                    f"Тип: {cur_item[2]}\n" \
                    f"Количество: {item[1]}\n" \
                    f"Цена покупки: {cur_item[0]} (продажи {cur_item[1]})\n" \
-                   f"Бонусы: здоровье +{cur_item[3]}, мана +{cur_item[4]}, атака +{cur_item[5]}, " \
-                   f"магическая атака +{cur_item[6]}, броня +{cur_item[7]}, магическая броня +{cur_item[8]}\n" \
+                   f"Бонусы:\n" \
+                   f"    здоровье +{cur_item[3]}, мана +{cur_item[4]},\n" \
+                   f"    атака +{cur_item[5]}, магическая атака +{cur_item[6]},\n" \
+                   f"    броня +{cur_item[7]}, магическая броня +{cur_item[8]}\n" \
                    f"Нужный уровень для ношения предмета: {cur_item[9]}\n"
         if item[2] == 1:
             cur_text += "Статус: используется\n\n"
@@ -94,7 +98,7 @@ def create_items_text(cursor, message):
     cursor.execute(f'select LocationName from locations where LocationID = {location_id}')
     location_name = cursor.fetchall()[0][0]
     text = f"Ты находишься в {location_name}, твой баланс: {money}\n" \
-           f"Тут можно купить/продать:\n\n"
+           f"Здесь можно купить/продать:\n\n"
     cursor.execute(f'select ItemID from items_sellers where LocationID = {location_id}')
     items = list(cursor.fetchall())
     cnt = 1
@@ -111,8 +115,10 @@ def create_items_text(cursor, message):
         cur_text = f"№{str(cnt)}\n" \
                    f"Тип: {cur_item[0]}\n" \
                    f"Цена покупки: {cur_item[1]} (продажи {cur_item[2]})\n" \
-                   f"Бонусы: здоровье +{cur_item[3]}, мана +{cur_item[4]}, атака +{cur_item[5]}, " \
-                   f"магическая атака +{cur_item[6]}, броня +{cur_item[7]}, магическая броня +{cur_item[8]}\n" \
+                   f"Бонусы:\n" \
+                   f"    здоровье +{cur_item[3]}, мана +{cur_item[4]},\n" \
+                   f"    атака +{cur_item[5]}, магическая атака +{cur_item[6]},\n" \
+                   f"    броня +{cur_item[7]}, магическая броня +{cur_item[8]}\n" \
                    f"Нужный уровень для ношения предмета: {cur_item[9]}\n" \
                    f"В инвентаре: {quantity}\n\n"
         text += cur_text
