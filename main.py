@@ -78,13 +78,30 @@ async def inventory(message: types.Message):
     location_name, location_type = cursor.fetchall()[0]
     if location_type == "dungeon":
         await message.answer(text=utils.FORBIDDEN_TEXT)
-    else:
+    elif location_name == 'Kaer_Morhen':
         markup = types.InlineKeyboardMarkup(row_width=4)
-        item = types.InlineKeyboardButton(f"Продать", callback_data=f"buy_item")
+        item = types.InlineKeyboardButton(f"Купить", callback_data=f"buy_item_Kaer_Morhen")
         markup.row(item)
-        item = types.InlineKeyboardButton(f"Купить", callback_data=f"sell_item")
+        item = types.InlineKeyboardButton(f"Продать", callback_data=f"sell_item_Kaer_Morhen")
         markup.row(item)
         await message.answer(text=commands.create_items_text(cursor, message), reply_markup=markup)
+
+
+@dp.callback_query_handler(text_contains=["buy_item_Kaer_Morhen"])
+async def buy_item(call: types.CallbackQuery):
+    markup = types.InlineKeyboardMarkup(row_width=4)
+    item = types.InlineKeyboardButton(f"1", callback_data=f"buy_1")
+    markup.row(item)
+    item = types.InlineKeyboardButton(f"2", callback_data=f"buy_2")
+    markup.row(item)
+    await call.message.answer(text=commands.create_items_text(cursor, call.message) + "\nВыбери предмет для покупки",
+                              reply_markup=markup)
+
+
+@dp.callback_query_handler(text_contains=["buy_"])
+async def buy_item(call: types.CallbackQuery):
+    item_id = call.data.replace('buy_', '')
+    await call.message.answer(text=commands.buy_item(item_id, cursor, connect, call.message))
 
 
 @dp.message_handler(commands=["go"])

@@ -76,3 +76,25 @@ def create_items_text(cursor, message):
         text += cur_text
         cnt += 1
     return text
+
+
+def buy_item(item_id, cursor, connect, message):
+    cursor.execute(f'select Money from person where UserID = {message.chat.id}')
+    money = cursor.fetchall()[0]
+    cursor.execute(f'select Cost from items where ItemID = {item_id}')
+    item_cost = cursor.fetchall()[0]
+    if item_cost > money:
+        return "Недостаточно средств!"
+    cursor.execute(f'select quantity from items_links where UserID = {message.chat.id} and ItemID = {item_id}')
+    quantity = cursor.fetchall()
+    if len(quantity) != 0:
+        cursor.execute(f'update items_links set quantity = {quantity[0][0] + 1} '
+                       f'where UserID = {message.chat.id} and ItemID = {item_id}')
+        connect.commit()
+    else:
+        cursor.execute('INSERT INTO items_links (UserID, ItemID, quantity, IsActive)'
+                       'values (?, ?, ?, ?)',
+                       [message.chat.id, 1, 2, 1])
+        connect.commit()
+
+    return "Успешная покупка!"
