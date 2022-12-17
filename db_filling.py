@@ -6,11 +6,11 @@ def fill_items():
     cursor = connect.cursor()
     cursor.execute('INSERT INTO items (Cost, CostToSale, ItemType, HP, ReqLevel) '
                    'VALUES (?, ?, ?, ?, ?)',
-                   [1, 5, 'potion', 2, 1])
+                   [1, 1, 'potion', 2, 1])
     connect.commit()  # зелье-здоровье id=1
     cursor.execute('INSERT INTO items (Cost, CostToSale, ItemType, Mana, ReqLevel) '
                    'VALUES (?, ?, ?, ?, ?)',
-                   [1, 5, 'potion', 2, 1])
+                   [1, 1, 'potion', 2, 1])
     connect.commit()  # зелье-мана id=2
     cursor.execute('INSERT INTO items (Cost, CostToSale, ItemType, Armour, MagicArmour, ReqLevel) '
                    'VALUES (?, ?, ?, ?, ?, ?)',

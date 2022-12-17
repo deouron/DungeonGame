@@ -9,7 +9,7 @@ def create_person_db():
     cursor.execute("""create table person(
             UserID int DEFAULT 0,
             Nickname text DEFAULT "Character",
-            LEVEL int DEFAULT 1,
+            Level int DEFAULT 1,
             HP int DEFAULT 10,
             CurHP int DEFAULT 10,
             Money int DEFAULT 10,

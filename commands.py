@@ -53,6 +53,40 @@ def create_inventory_text(cursor, message):
     return text
 
 
+def create_garments_text(cursor, message):
+    cursor.execute(f'select ItemID, quantity, IsActive from items_links where UserID = {message.chat.id}')
+    user_items = list(cursor.fetchall())
+    if len(user_items) == 0:
+        text = "В инвентаре пусто"
+        return text
+    can_put_on = False
+    text = "Твой инвентарь:\n\n"
+    for item in user_items:
+        item = list(item)
+        cursor.execute(
+            f'select Cost, CostToSale, ItemType, HP, Mana, Attack, MagicAttack, Armour, MagicArmour, '
+            f'ReqLevel from items where ItemID = {item[0]}')
+        cur_item = list(cursor.fetchall()[0])
+        if cur_item[2] == 'potion':
+            continue
+        can_put_on = True
+        cur_text = f"Id: {item[0]}\n" \
+                   f"Тип: {cur_item[2]}\n" \
+                   f"Количество: {item[1]}\n" \
+                   f"Цена для покупки: {cur_item[0]} (для продажи {cur_item[1]})\n" \
+                   f"Бонусы: здоровье +{cur_item[3]}, мана +{cur_item[4]}, атака +{cur_item[5]}, " \
+                   f"магическая атака +{cur_item[6]}, броня +{cur_item[7]}, магическая броня +{cur_item[8]}\n" \
+                   f"Нужный уровень для ношения предмета: {cur_item[9]}\n"
+        if item[2] == 1:
+            cur_text += "Статус: используется\n\n"
+        else:
+            cur_text += "Статус: не используется\n\n"
+        text += cur_text
+    if can_put_on:
+        return text
+    return "В инвентаре нет оружия и одежды"
+
+
 def create_items_text(cursor, message):
     cursor.execute(f'select LocationID, Money from person where UserID = {message.chat.id}')
     location_id, money = cursor.fetchall()[0]
@@ -64,6 +98,12 @@ def create_items_text(cursor, message):
     items = list(cursor.fetchall())
     cnt = 1
     for item in items:
+        cursor.execute(f'select quantity from items_links where ItemID = {item[0]} and UserID = {message.chat.id}')
+        quantity = cursor.fetchall()
+        if len(quantity) == 0:
+            quantity = 0
+        else:
+            quantity = quantity[0][0]
         cursor.execute(f'select ItemType, Cost, CostToSale, HP, Mana,  Attack, MagicAttack, Armour, MagicArmour, '
                        f'ReqLevel from items where ItemID = {item[0]}')
         cur_item = list(cursor.fetchall()[0])
@@ -72,19 +112,25 @@ def create_items_text(cursor, message):
                    f"Цена для покупки: {cur_item[1]} (для продажи {cur_item[2]})\n" \
                    f"Бонусы: здоровье +{cur_item[3]}, мана +{cur_item[4]}, атака +{cur_item[5]}, " \
                    f"магическая атака +{cur_item[6]}, броня +{cur_item[7]}, магическая броня +{cur_item[8]}\n" \
-                   f"Нужный уровень для ношения предмета: {cur_item[9]}\n\n"
+                   f"Нужный уровень для ношения предмета: {cur_item[9]}\n" \
+                   f"В инвентаре: {quantity}\n\n"
         text += cur_text
         cnt += 1
     return text
 
 
 def buy_item(item_id, cursor, connect, message):
-    cursor.execute(f'select Money from person where UserID = {message.chat.id}')
-    money = cursor.fetchall()[0]
-    cursor.execute(f'select Cost from items where ItemID = {item_id}')
-    item_cost = cursor.fetchall()[0]
+    cursor.execute(f'select Money, Level from person where UserID = {message.chat.id}')
+    money, Level = cursor.fetchall()[0]
+    cursor.execute(f'select Cost, ReqLevel from items where ItemID = {item_id}')
+    item_cost, ReqLevel = cursor.fetchall()[0]
+    if ReqLevel > Level:
+        return "Недостаточный уровень!"
     if item_cost > money:
         return "Недостаточно средств!"
+    cursor.execute(f'update person set Money = {money - item_cost} '
+                   f'where UserID = {message.chat.id}')
+    connect.commit()
     cursor.execute(f'select quantity from items_links where UserID = {message.chat.id} and ItemID = {item_id}')
     quantity = cursor.fetchall()
     if len(quantity) != 0:
@@ -96,5 +142,27 @@ def buy_item(item_id, cursor, connect, message):
                        'values (?, ?, ?, ?)',
                        [message.chat.id, 1, 2, 1])
         connect.commit()
-
     return "Успешная покупка!"
+
+
+def sell_item(item_id, cursor, connect, message):
+    cursor.execute(f'select quantity from items_links where UserID = {message.chat.id} and ItemID = {item_id}')
+    quantity = cursor.fetchall()
+    if len(quantity) != 0 and quantity[0][0] > 0:
+        cursor.execute(f'select Money from person where UserID = {message.chat.id}')
+        money = cursor.fetchall()[0][0]
+        cursor.execute(f'select CostToSale from items where ItemID = {item_id}')
+        item_cost = cursor.fetchall()[0][0]
+        remain = quantity[0][0] - 1
+        if remain > 0:
+            cursor.execute(f'update items_links set quantity = {remain} '
+                           f'where UserID = {message.chat.id} and ItemID = {item_id}')
+            connect.commit()
+        else:
+            cursor.execute(f'DELETE from items_links where UserId = {message.chat.id} and ItemID = {item_id}')
+        cursor.execute(f'update person set Money = {money + item_cost} '
+                       f'where UserID = {message.chat.id}')
+        connect.commit()
+    else:
+        return "Нет предметов для продажи!"
+    return "Успешная продажа!"

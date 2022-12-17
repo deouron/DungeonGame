@@ -70,6 +70,11 @@ async def inventory(message: types.Message):
     await message.answer(text=commands.create_inventory_text(cursor, message))
 
 
+@dp.message_handler(commands=["garments"])
+async def garments(message: types.Message):
+    await message.answer(text=commands.create_garments_text(cursor, message))
+
+
 @dp.message_handler(commands=["items"])
 async def inventory(message: types.Message):
     cursor.execute(f'select LocationID from person where UserID = {message.chat.id}')
@@ -98,10 +103,27 @@ async def buy_item(call: types.CallbackQuery):
                               reply_markup=markup)
 
 
+@dp.callback_query_handler(text_contains=["sell_item_Kaer_Morhen"])
+async def buy_item(call: types.CallbackQuery):
+    markup = types.InlineKeyboardMarkup(row_width=4)
+    item = types.InlineKeyboardButton(f"1", callback_data=f"sell_1")
+    markup.row(item)
+    item = types.InlineKeyboardButton(f"2", callback_data=f"sell_2")
+    markup.row(item)
+    await call.message.answer(text=commands.create_items_text(cursor, call.message) + "\nВыбери предмет для продажи",
+                              reply_markup=markup)
+
+
 @dp.callback_query_handler(text_contains=["buy_"])
 async def buy_item(call: types.CallbackQuery):
     item_id = call.data.replace('buy_', '')
     await call.message.answer(text=commands.buy_item(item_id, cursor, connect, call.message))
+
+
+@dp.callback_query_handler(text_contains=["sell_"])
+async def buy_item(call: types.CallbackQuery):
+    item_id = call.data.replace('sell_', '')
+    await call.message.answer(text=commands.sell_item(item_id, cursor, connect, call.message))
 
 
 @dp.message_handler(commands=["go"])
