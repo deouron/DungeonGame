@@ -24,8 +24,7 @@ def create_stats_location_text(locations):
 
 
 def create_inventory_text(cursor, message):
-    cursor.execute(f'select ItemID, quantity, IsActive from items_links '
-                   f'where UserID = {message.chat.id}')
+    cursor.execute(f'select ItemID, quantity, IsActive from items_links where UserID = {message.chat.id}')
     user_items = list(cursor.fetchall())
     if len(user_items) == 0:
         text = "В инвентаре пусто"
@@ -51,3 +50,26 @@ def create_inventory_text(cursor, message):
     return text
 
 
+def create_seller_text(cursor, message):
+    cursor.execute(f'select LocationID, Money from person where UserID = {message.chat.id}')
+    location_id, money = cursor.fetchall()[0]
+    cursor.execute(f'select LocationName from locations where LocationID = {location_id}')
+    location_name = cursor.fetchall()[0][0]
+    text = f"Ты находишься в {location_name}, твой баланс: {money}\n" \
+           f"Тут можно купить/продать:\n\n"
+    cursor.execute(f'select ItemID from items_sellers where LocationID = {location_id}')
+    items = list(cursor.fetchall())
+    cnt = 1
+    for item in items:
+        cursor.execute(f'select ItemType, Cost, CostToSale, HP, Mana,  Attack, MagicAttack, Armour, MagicArmour, '
+                       f'ReqLevel from items where ItemID = {item[0]}')
+        cur_item = list(cursor.fetchall()[0])
+        cur_text = f"{str(cnt)}\n" \
+                   f"Тип: {cur_item[0]}\n" \
+                   f"Цена для покупки: {cur_item[1]} (для продажи {cur_item[2]})\n" \
+                   f"Бонусы: здоровье +{cur_item[3]}, мана +{cur_item[4]}, атака +{cur_item[5]}, " \
+                   f"магическая атака +{cur_item[6]}, броня +{cur_item[7]}, магическая броня +{cur_item[8]}\n" \
+                   f"Нужный уровень для ношения предмета: {cur_item[9]}\n\n"
+        text += cur_text
+        cnt += 1
+    return text
