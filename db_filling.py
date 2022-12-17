@@ -71,17 +71,20 @@ def fill_items_sellers():
 def fill_locations():
     connect = sqlite3.connect('dbs/data.db', check_same_thread=False)
     cursor = connect.cursor()
-    cursor.execute('INSERT INTO locations (LocationName) VALUES (?)', ['Kaer_Morhen'])
+    cursor.execute('INSERT INTO locations (LocationName, Info) VALUES (?, ?)',
+                   ['Kaer_Morhen', "Здесь можно купить зелья"])
     connect.commit()  # id=1
-    cursor.execute('INSERT INTO locations (LocationName, XCoord, YCoord) VALUES (?, ?, ?)', ['Novigrad', 0, 10])
+    cursor.execute('INSERT INTO locations (LocationName, XCoord, YCoord, Info) VALUES (?, ?, ?, ?)',
+                   ['Novigrad', 0, 10, "Здесь можно купить оружие"])
     connect.commit()  # id=2
-    cursor.execute('INSERT INTO locations (LocationName, XCoord, YCoord) VALUES (?, ?, ?)', ['White_Orchard', -5, -5])
+    cursor.execute('INSERT INTO locations (LocationName, XCoord, YCoord, Info) VALUES (?, ?, ?, ?)',
+                   ['White_Orchard', -5, -5, 'Здесь можно купить броню, шлем, сапоги и наручи'])
     connect.commit()  # id=3
-    cursor.execute('INSERT INTO locations (LocationName, LocationType, XCoord, YCoord) VALUES (?, ?, ?, ?)',
-                   ['Crones', 'dungeon', 8, 1])
+    cursor.execute('INSERT INTO locations (LocationName, LocationType, XCoord, YCoord, Info) VALUES (?, ?, ?, ?, ?)',
+                   ['Crones', 'dungeon', 8, 1, 'Слабые монстры, маленький лут'])
     connect.commit()  # id=4
-    cursor.execute('INSERT INTO locations (LocationName, LocationType, XCoord, YCoord) VALUES (?, ?, ?, ?)',
-                   ['Skellige', 'dungeon', 4, 0])
+    cursor.execute('INSERT INTO locations (LocationName, LocationType, XCoord, YCoord, Info) VALUES (?, ?, ?, ?, ?)',
+                   ['Skellige', 'dungeon', 4, 0, 'Сильные монстры, большой лут'])
     connect.commit()  # id=5
 
 

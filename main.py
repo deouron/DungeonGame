@@ -62,9 +62,7 @@ async def stats_player(message: types.Message):
 
 @dp.message_handler(commands=["locations"])
 async def stats_locations(message: types.Message):
-    cursor.execute(f'select LocationName, LocationType, XCoord, YCoord from locations')
-    locations = list(cursor.fetchall())
-    await message.answer(text=commands.create_stats_location_text(locations))
+    await message.answer(text=commands.create_stats_location_text(cursor))
 
 
 @dp.message_handler(commands=["inventory"])
@@ -81,7 +79,12 @@ async def inventory(message: types.Message):
     if location_type == "dungeon":
         await message.answer(text=utils.FORBIDDEN_TEXT)
     else:
-        await message.answer(text=commands.create_seller_text(cursor, message))
+        markup = types.InlineKeyboardMarkup(row_width=4)
+        item = types.InlineKeyboardButton(f"Продать", callback_data=f"buy_item")
+        markup.row(item)
+        item = types.InlineKeyboardButton(f"Купить", callback_data=f"sell_item")
+        markup.row(item)
+        await message.answer(text=commands.create_items_text(cursor, message), reply_markup=markup)
 
 
 @dp.message_handler(commands=["go"])

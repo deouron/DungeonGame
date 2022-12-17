@@ -13,11 +13,14 @@ def create_stats_player_text(person_info, location_info):
     return STATS_TEXT
 
 
-def create_stats_location_text(locations):
+def create_stats_location_text(cursor):
+    cursor.execute(f'select LocationName, LocationType, XCoord, YCoord, Info from locations')
+    locations = list(cursor.fetchall())
     STATS_TEXT = ""
     for location in locations:
         cur_location_text = f"Название: {location[0]}\n" \
                             f"Тип: {location[1]}\n" \
+                            f"Описание: {location[4]}\n" \
                             f"Координата: ({location[2]}, {location[3]}) \n\n"
         STATS_TEXT += cur_location_text
     return STATS_TEXT
@@ -50,7 +53,7 @@ def create_inventory_text(cursor, message):
     return text
 
 
-def create_seller_text(cursor, message):
+def create_items_text(cursor, message):
     cursor.execute(f'select LocationID, Money from person where UserID = {message.chat.id}')
     location_id, money = cursor.fetchall()[0]
     cursor.execute(f'select LocationName from locations where LocationID = {location_id}')

@@ -51,7 +51,8 @@ def create_locations_db():
             XCoord int DEFAULT 0,
             YCoord int DEFAULT 0,
             LocationType text DEFAULT city,
-            LocationName text DEFAULT center
+            LocationName text DEFAULT center,
+            Info text DEFAULT ""
             );""")
     connect.commit()
 
