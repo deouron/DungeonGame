@@ -18,7 +18,9 @@ def create_person_db():
             XP int DEFAULT 0,
             Armour int DEFAULT 0,
             MagicArmour int DEFAULT 0,
-            LocationID int DEFAULT 1
+            LocationID int DEFAULT 1,
+            MobId int DEFAULT 0,
+            MopHP int DEFAULT 0
             );""")
     connect.commit()
 

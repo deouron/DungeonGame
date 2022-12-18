@@ -74,6 +74,15 @@ def fill_items_sellers():
     connect.commit()
 
 
+def fill_mobs():
+    connect = sqlite3.connect('dbs/data.db', check_same_thread=False)
+    cursor = connect.cursor()
+    cursor.execute('INSERT INTO mobs (HP, XP, ReqLevel, AttackType, Attack, Armour, MagicArmour)'
+                   ' VALUES (?, ?, ?, ?, ?, ?, ?)',
+                   [6, 110, 1, "physical", 7, 1, 0])
+    connect.commit()  # id=1
+
+
 def fill_locations():
     connect = sqlite3.connect('dbs/data.db', check_same_thread=False)
     cursor = connect.cursor()

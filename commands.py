@@ -63,7 +63,7 @@ def create_garments_text(cursor, message):
     if len(user_items) == 0:
         return utils.EMPTY_INVENTORY_TEXT
     can_put_on = False
-    text = "Твой инвентарь:\n\n"
+    text = "Твой инвентарь (одежда и оружия):\n\n"
     for item in user_items:
         item = list(item)
         cursor.execute(
@@ -90,6 +90,32 @@ def create_garments_text(cursor, message):
     if can_put_on:
         return text
     return utils.NO_GARMENTS_TEXT
+
+
+def create_potions_text(cursor, message):
+    cursor.execute(f'select ItemID, quantity, IsActive from items_links where UserID = {message.chat.id}')
+    user_items = list(cursor.fetchall())
+    if len(user_items) == 0:
+        return utils.EMPTY_INVENTORY_TEXT
+    can_put_on = False
+    text = "Твой инвентарь (зелья):\n\n"
+    for item in user_items:
+        item = list(item)
+        cursor.execute(
+            f'select Cost, CostToSale, ItemType, HP, Mana, Attack, MagicAttack, Armour, MagicArmour, '
+            f'ReqLevel from items where ItemID = {item[0]}')
+        cur_item = list(cursor.fetchall()[0])
+        if cur_item[2] != 'potion':
+            continue
+        can_put_on = True
+        cur_text = f"Id: {item[0]}\n" \
+                   f"Тип: {cur_item[2]}\n" \
+                   f"Количество: {item[1]}\n" \
+                   f"Бонусы: здоровье +{cur_item[3]}, мана +{cur_item[4]}\n\n"
+        text += cur_text
+    if can_put_on:
+        return text
+    return utils.NO_POTION_TEXT
 
 
 def create_items_text(cursor, message):
@@ -202,3 +228,71 @@ def use_item(item_id, cursor, connect, message):
     cursor.execute(f'update items_links set IsActive = 0 where UserID = {message.chat.id} and ItemID = {active}')
     connect.commit()
     return utils.ITEM_IS_IN_USE_TEXT
+
+
+def create_mob_info_text(message, cursor):
+    cursor.execute(f'select MobId from person where UserID = {message.chat.id}')
+    mob_id = cursor.fetchall()[0][0]
+    cursor.execute(f'select HP, XP, ReqLevel, AttackType, Attack, Armour, MagicArmour from mobs where MobID = {mob_id}')
+    HP, XP, ReqLevel, AttackType, Attack, Armour, MagicArmour = cursor.fetchall()[0]
+    text = f"Информация о монстре:\n\n" \
+           f"Здоровье: {HP}\n" \
+           f"Тип атака: {AttackType}\n" \
+           f"Сила атаки: {Attack}\n" \
+           f"Броня: {Armour}\n" \
+           f"Магическая броня: {MagicArmour}\n\n" \
+           f"Опыт за победу: {XP}\n" \
+           f"Необходимый уровень для появления у персонажа: {ReqLevel}\n"
+    return text
+
+
+def create_bonuses(message, cursor):
+    cursor.execute(f'select ItemID from items_links where UserID = {message.chat.id} and IsActive = 1')
+    active_items = cursor.fetchall()
+    bonuses = [0, 0, 0, 0]
+    for item_id in active_items:
+        cursor.execute(f'select ItemType, Attack, MagicAttack, Armour, MagicArmour from items where '
+                       f'ItemID = {item_id[0]}')
+        ItemType, Attack, MagicAttack, Armour, MagicArmour = cursor.fetchall()[0]
+        if ItemType == 'potion':
+            continue
+        bonuses[0] += Attack
+        bonuses[1] += MagicAttack
+        bonuses[2] += Armour
+        bonuses[3] += MagicArmour
+    return bonuses
+
+
+def attack_mob(message, cursor):
+    bonuses = create_bonuses(message, cursor)
+    cursor.execute(f'select MobId, CurHP from person where UserID = {message.chat.id}')
+    mob_id, CurHP = cursor.fetchall()[0]
+    cursor.execute(f'select AttackType, Attack from mobs where MobID = {mob_id}')
+    AttackType, Attack = cursor.fetchall()[0]
+    if AttackType == "physical":
+        Attack = max(0, Attack - bonuses[2])
+    else:
+        Attack = max(0, Attack - bonuses[3])
+    new_hp = CurHP - Attack
+    if new_hp <= 0:
+        return utils.END_TEXT
+    cursor.execute(f'update person set CurHP = {new_hp} where UserID = {message.chat.id}')
+    return new_hp
+
+
+def drink_potion(item_id, cursor, connect, message):
+    cursor.execute(f"select HP, Mana from items where ItemID = {item_id}")
+    HP, Mana = cursor.fetchall()[0]
+    cursor.execute(f"select CurHP from person where UserID = {message.chat.id}")
+    CurHP = cursor.fetchall()[0][0]
+    cursor.execute(f"select quantity from items_links where UserID = {message.chat.id} and ItemID = {item_id}")
+    quantity = cursor.fetchall()[0][0]
+    cursor.execute(f"update person set CurHP = {CurHP + HP} where UserID = {message.chat.id}")
+    connect.commit()
+    if quantity == 1:
+        cursor.execute(f"DELETE from items_links where UserID = {message.chat.id} and ItemID = {item_id}")
+        connect.commit()
+    else:
+        cursor.execute(f"update items_links set quantity = {quantity - 1} where UserID = {message.chat.id} "
+                       f"and ItemID = {item_id}")
+    return utils.SUCCESSFUL_POTION_USE_TEXT
