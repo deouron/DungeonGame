@@ -92,7 +92,7 @@ async def put_on(message: types.Message):
         cursor.execute(f'select ItemID from items_links where UserID = {message.chat.id} and IsActive = 0')
         user_items = list(cursor.fetchall())
         if len(user_items) == 0:
-            await message.answer(text=utils.EMPTY_INVENTORY_TEXT + utils.OR_ALL_ITEMS_ARE_USED_TEXT)
+            await message.answer(text=utils.EMPTY_INVENTORY_TEXT + " " + utils.OR_ALL_ITEMS_ARE_USED_TEXT)
         else:
             markup = types.InlineKeyboardMarkup(row_width=4)
             can_put_on = False
@@ -106,7 +106,7 @@ async def put_on(message: types.Message):
                 item = types.InlineKeyboardButton(f"{item[0]}", callback_data=f"use_{item[0]}")
                 markup.row(item)
             if not can_put_on:
-                await message.answer(text=utils.NO_GARMENTS_TEXT + utils.OR_ALL_ITEMS_ARE_USED_TEXT)
+                await message.answer(text=utils.NO_GARMENTS_TEXT + " " + utils.OR_ALL_ITEMS_ARE_USED_TEXT)
             else:
                 await message.answer(
                     text=commands.create_garments_text(cursor, message) + "\n" + utils.CHOOSE_ITEM_TO_USE_TEXT,
@@ -131,7 +131,7 @@ async def take_off(message: types.Message):
         cursor.execute(f'select ItemID from items_links where UserID = {message.chat.id} and IsActive = 1')
         user_items = list(cursor.fetchall())
         if len(user_items) == 0:
-            await message.answer(text=utils.EMPTY_INVENTORY_TEXT + utils.OR_ALL_ITEMS_ARE_NOT_USED_TEXT)
+            await message.answer(text=utils.EMPTY_INVENTORY_TEXT + " " + utils.OR_ALL_ITEMS_ARE_NOT_USED_TEXT)
         else:
             markup = types.InlineKeyboardMarkup(row_width=4)
             can_put_on = False
@@ -145,7 +145,7 @@ async def take_off(message: types.Message):
                 item = types.InlineKeyboardButton(f"{item[0]}", callback_data=f"take_off_{item[0]}")
                 markup.row(item)
             if not can_put_on:
-                await message.answer(text=utils.NO_GARMENTS_TEXT + utils.OR_ALL_ITEMS_ARE_NOT_USED_TEXT)
+                await message.answer(text=utils.NO_GARMENTS_TEXT + " " + utils.OR_ALL_ITEMS_ARE_NOT_USED_TEXT)
             else:
                 await message.answer(
                     text=commands.create_garments_text(cursor, message) + "\n" + utils.CHOOSE_ITEM_TO_TAKE_OFF_TEXT,
@@ -168,23 +168,23 @@ async def items(message: types.Message):
         await message.answer(text=utils.FORBIDDEN_TEXT)
     elif location_name == 'Kaer_Morhen':
         markup = types.InlineKeyboardMarkup(row_width=4)
-        item = types.InlineKeyboardButton(f"Купить", callback_data=f"buy_item_Kaer_Morhen")
+        item = types.InlineKeyboardButton(utils.BUY_TEXT, callback_data=f"buy_item_Kaer_Morhen")
         markup.row(item)
-        item = types.InlineKeyboardButton(f"Продать", callback_data=f"sell_item_Kaer_Morhen")
+        item = types.InlineKeyboardButton(utils.SELL_TEXT, callback_data=f"sell_item_Kaer_Morhen")
         markup.row(item)
         await message.answer(text=commands.create_items_text(cursor, message), reply_markup=markup)
     elif location_name == 'Novigrad':
         markup = types.InlineKeyboardMarkup(row_width=4)
-        item = types.InlineKeyboardButton(f"Купить", callback_data=f"buy_item_Novigrad")
+        item = types.InlineKeyboardButton(utils.BUY_TEXT, callback_data=f"buy_item_Novigrad")
         markup.row(item)
-        item = types.InlineKeyboardButton(f"Продать", callback_data=f"sell_item_Novigrad")
+        item = types.InlineKeyboardButton(utils.SELL_TEXT, callback_data=f"sell_item_Novigrad")
         markup.row(item)
         await message.answer(text=commands.create_items_text(cursor, message), reply_markup=markup)
     elif location_name == 'White_Orchard':
         markup = types.InlineKeyboardMarkup(row_width=4)
-        item = types.InlineKeyboardButton(f"Купить", callback_data=f"buy_item_White_Orchard")
+        item = types.InlineKeyboardButton(utils.BUY_TEXT, callback_data=f"buy_item_White_Orchard")
         markup.row(item)
-        item = types.InlineKeyboardButton(f"Продать", callback_data=f"sell_item_White_Orchard")
+        item = types.InlineKeyboardButton(utils.SELL_TEXT, callback_data=f"sell_item_White_Orchard")
         markup.row(item)
         await message.answer(text=commands.create_items_text(cursor, message), reply_markup=markup)
 
@@ -319,7 +319,7 @@ async def move_to_Novigrad(call: types.CallbackQuery):
     cursor.execute(f'select MoveDuration from locations_links where FirstLocationID = {cur_location} and '
                    f'SecondLocationID = {novigrad_id}')
     duration = list(cursor.fetchall()[0])[0]
-    await call.message.answer(text=f"Идём в Novigrad. Путь займёт {duration} секунд(ы)")
+    await call.message.answer(text=utils.create_duration_text("Novigrad", duration))
     await call.message.answer(text=str(duration))
     for i in range(duration - 1, -1, -1):
         time.sleep(1)
@@ -329,7 +329,7 @@ async def move_to_Novigrad(call: types.CallbackQuery):
     cursor.execute(f'update person set LocationID = {novigrad_id}, CurHP = {max(max_hp, cur_hp)} '
                    f'where UserID = {call.message.chat.id}')
     connect.commit()
-    await call.message.answer(text="Прибыли в Novigrad, здесь можно купить оружие. Здоровье восстановлено!")
+    await call.message.answer(text=utils.Novigrad_ARRIVAL_TEXT)
 
 
 @dp.callback_query_handler(text_contains=["move_to_White_Orchard"])
@@ -341,7 +341,7 @@ async def move_to_White_Orchard(call: types.CallbackQuery):
     cursor.execute(f'select MoveDuration from locations_links where FirstLocationID = {cur_location} and '
                    f'SecondLocationID = {White_Orchard_id}')
     duration = list(cursor.fetchall()[0])[0]
-    await call.message.answer(text=f"Идём в White_Orchard. Путь займёт {duration} секунд(ы)")
+    await call.message.answer(text=utils.create_duration_text("White_Orchard", duration))
     await call.message.answer(text=str(duration))
     for i in range(duration - 1, -1, -1):
         time.sleep(1)
@@ -351,8 +351,7 @@ async def move_to_White_Orchard(call: types.CallbackQuery):
     cursor.execute(f'update person set LocationID = {White_Orchard_id}, CurHP = {max(max_hp, cur_hp)} '
                    f'where UserID = {call.message.chat.id}')
     connect.commit()
-    await call.message.answer(text="Прибыли в White_Orchard, здесь можно купить броню, шлем, сапоги и наручи. "
-                                   "Здоровье восстановлено!")
+    await call.message.answer(text=utils.White_Orchard_ARRIVAL_TEXT)
 
 
 @dp.callback_query_handler(text_contains=["move_to_Kaer_Morhen"])
@@ -364,7 +363,7 @@ async def move_to_Kaer_Morhen(call: types.CallbackQuery):
     cursor.execute(f'select MoveDuration from locations_links where FirstLocationID = {cur_location} and '
                    f'SecondLocationID = {Kaer_Morhen_id}')
     duration = list(cursor.fetchall()[0])[0]
-    await call.message.answer(text=f"Идём в Kaer_Morhen. Путь займёт {duration} секунд(ы)")
+    await call.message.answer(text=utils.create_duration_text("Kaer_Morhen", duration))
     await call.message.answer(text=str(duration))
     for i in range(duration - 1, -1, -1):
         time.sleep(1)
@@ -374,7 +373,7 @@ async def move_to_Kaer_Morhen(call: types.CallbackQuery):
     cursor.execute(f'update person set LocationID = {Kaer_Morhen_id}, CurHP = {max(max_hp, cur_hp)} '
                    f'where UserID = {call.message.chat.id}')
     connect.commit()
-    await call.message.answer(text="Прибыли в Kaer_Morhen, здесь можно купить зелья. Здоровье восстановлено!")
+    await call.message.answer(text=utils.Kaer_Morhen_ARRIVAL_TEXT)
 
 
 @dp.callback_query_handler(text_contains=["move_to_Skellige"])
@@ -386,7 +385,7 @@ async def move_to_Skellige(call: types.CallbackQuery):
     cursor.execute(f'select MoveDuration from locations_links where FirstLocationID = {cur_location} and '
                    f'SecondLocationID = {Skellige_id}')
     duration = cursor.fetchall()[0][0]
-    await call.message.answer(text=f"Идём в Skellige. Путь займёт {duration} секунд(ы)")
+    await call.message.answer(text=utils.create_duration_text("Skellige", duration))
     await call.message.answer(text=str(duration))
     for i in range(duration - 1, -1, -1):
         time.sleep(1)
@@ -396,7 +395,7 @@ async def move_to_Skellige(call: types.CallbackQuery):
     cursor.execute(f'update person set LocationID = {Skellige_id}, CurHP = {max(max_hp, cur_hp)} '
                    f'where UserID = {call.message.chat.id}')
     connect.commit()
-    await call.message.answer(text="Прибыли в Skellige, сражение начинается!")
+    await call.message.answer(text=utils.Skellige_ARRIVAL_TEXT)
 
     cursor.execute(f'select MobID from mobs where ReqLevel <= '
                    f'(select Level from person where UserID = {call.message.chat.id})')
@@ -412,11 +411,11 @@ async def move_to_Skellige(call: types.CallbackQuery):
     await call.message.answer(text=commands.create_bonuses_text(call.message, cursor))
 
     markup = types.InlineKeyboardMarkup(row_width=4)
-    item = types.InlineKeyboardButton(f"Получить информацию о монстре", callback_data=f"mob_info")
+    item = types.InlineKeyboardButton(utils.GET_MOB_INFO_TEXT, callback_data=f"mob_info")
     markup.row(item)
-    item = types.InlineKeyboardButton(f"Выпить зелье", callback_data=f"drink_potion")
+    item = types.InlineKeyboardButton(utils.DRINK_POTION_TEXT, callback_data=f"drink_potion")
     markup.row(item)
-    item = types.InlineKeyboardButton(f"Атаковать", callback_data=f"attack")
+    item = types.InlineKeyboardButton(utils.ATTACK_TEXT, callback_data=f"attack")
     markup.row(item)
     await call.message.answer(text=utils.TURN_TEXT, reply_markup=markup)
 
@@ -430,7 +429,7 @@ async def move_to_Crones(call: types.CallbackQuery):
     cursor.execute(f'select MoveDuration from locations_links where FirstLocationID = {cur_location} and '
                    f'SecondLocationID = {Crones_id}')
     duration = cursor.fetchall()[0][0]
-    await call.message.answer(text=f"Идём в Crones. Путь займёт {duration} секунд(ы)")
+    await call.message.answer(text=utils.create_duration_text("Crones", duration))
     await call.message.answer(text=str(duration))
     for i in range(duration - 1, -1, -1):
         time.sleep(1)
@@ -440,7 +439,7 @@ async def move_to_Crones(call: types.CallbackQuery):
     cursor.execute(f'update person set LocationID = {Crones_id}, CurHP = {max(max_hp, cur_hp)} '
                    f'where UserID = {call.message.chat.id}')
     connect.commit()
-    await call.message.answer(text="Прибыли в Crones, сражение начинается!")
+    await call.message.answer(text=utils.Crones_ARRIVAL_TEXT)
 
     cursor.execute(f'select MobID from mobs where ReqLevel <= '
                    f'(select Level from person where UserID = {call.message.chat.id})')
@@ -456,11 +455,11 @@ async def move_to_Crones(call: types.CallbackQuery):
     await call.message.answer(text=commands.create_bonuses_text(call.message, cursor))
 
     markup = types.InlineKeyboardMarkup(row_width=4)
-    item = types.InlineKeyboardButton(f"Получить информацию о монстре", callback_data=f"mob_info")
+    item = types.InlineKeyboardButton(utils.GET_MOB_INFO_TEXT, callback_data=f"mob_info")
     markup.row(item)
-    item = types.InlineKeyboardButton(f"Выпить зелье", callback_data=f"drink_potion")
+    item = types.InlineKeyboardButton(utils.DRINK_POTION_TEXT, callback_data=f"drink_potion")
     markup.row(item)
-    item = types.InlineKeyboardButton(f"Атаковать", callback_data=f"attack")
+    item = types.InlineKeyboardButton(utils.ATTACK_TEXT, callback_data=f"attack")
     markup.row(item)
     await call.message.answer(text=utils.TURN_TEXT, reply_markup=markup)
 
@@ -479,11 +478,11 @@ async def attack_mod(call):
     else:
         await call.message.answer(text=utils.NEW_HP_TEXT + " " + str(action_result))
         markup = types.InlineKeyboardMarkup(row_width=4)
-        item = types.InlineKeyboardButton(f"Получить информацию о монстре", callback_data=f"mob_info")
+        item = types.InlineKeyboardButton(utils.GET_MOB_INFO_TEXT, callback_data=f"mob_info")
         markup.row(item)
-        item = types.InlineKeyboardButton(f"Выпить зелье", callback_data=f"drink_potion")
+        item = types.InlineKeyboardButton(utils.DRINK_POTION_TEXT, callback_data=f"drink_potion")
         markup.row(item)
-        item = types.InlineKeyboardButton(f"Атаковать", callback_data=f"attack")
+        item = types.InlineKeyboardButton(utils.ATTACK_TEXT, callback_data=f"attack")
         markup.row(item)
         await call.message.answer(text=utils.TURN_TEXT, reply_markup=markup)
 
@@ -546,7 +545,7 @@ async def physical(call: types.CallbackQuery):
         await call.message.answer(text=utils.WIN_MONEY_TEXT + " " + str(action_result[3]))
         cursor.execute(f"update person set LocationID = 1 where UserID = {call.message.chat.id}")
         connect.commit()
-        await call.message.answer(text="Прибыли в Kaer_Morhen, здесь можно купить зелья. Здоровье восстановлено!")
+        await call.message.answer(text=utils.Kaer_Morhen_ARRIVAL_TEXT)
 
 
 @dp.callback_query_handler(text_contains=["magic"])
@@ -561,14 +560,16 @@ async def magic(call: types.CallbackQuery):
             await call.message.answer(text=utils.UPDATE_LEVEL_TEXT + " " + str(action_result[1]))
         await call.message.answer(text=utils.WIN_ITEM_ID_TEXT + " " + str(action_result[2]))
         await call.message.answer(text=utils.WIN_MONEY_TEXT + " " + str(action_result[3]))
-        cursor.execute(f"update person set LocationID = 1 where UserID = {call.message.chat.id}")
+        cursor.execute(f'select HP, CurHP from person where UserID = {call.message.chat.id}')
+        max_hp, cur_hp = cursor.fetchall()[0]
+        cursor.execute(f'update person set LocationID = 1, CurHP = {max(max_hp, cur_hp)} '
+                       f'where UserID = {call.message.chat.id}')
         connect.commit()
-        await call.message.answer(text="Прибыли в Kaer_Morhen, здесь можно купить зелья. Здоровье восстановлено!")
+        await call.message.answer(text=utils.Kaer_Morhen_ARRIVAL_TEXT)
 
 
 @dp.message_handler()
 async def unknown_message(message: types.Message):
-    """Ответ на любое неожидаемое сообщение"""
     await message.answer(text=utils.UNKNOWN_TEST)
 
 
