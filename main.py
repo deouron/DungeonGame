@@ -282,7 +282,7 @@ async def move_to_Novigrad(call: types.CallbackQuery):
     cursor.execute(f'update person set LocationID = {novigrad_id}, CurHP = {max(max_hp, cur_hp)} '
                    f'where UserID = {call.message.chat.id}')
     connect.commit()
-    await call.message.answer(text="Пришли в Novigrad, здесь можно купить оружие. Здоровье восстановлено!")
+    await call.message.answer(text="Прибыли в Novigrad, здесь можно купить оружие. Здоровье восстановлено!")
 
 
 @dp.callback_query_handler(text_contains=["move_to_White_Orchard"])
@@ -304,7 +304,7 @@ async def move_to_White_Orchard(call: types.CallbackQuery):
     cursor.execute(f'update person set LocationID = {White_Orchard_id}, CurHP = {max(max_hp, cur_hp)} '
                    f'where UserID = {call.message.chat.id}')
     connect.commit()
-    await call.message.answer(text="Пришли в White_Orchard, здесь можно купить броню, шлем, сапоги и наручи. "
+    await call.message.answer(text="Прибыли в White_Orchard, здесь можно купить броню, шлем, сапоги и наручи. "
                                    "Здоровье восстановлено!")
 
 
@@ -327,7 +327,7 @@ async def move_to_Kaer_Morhen(call: types.CallbackQuery):
     cursor.execute(f'update person set LocationID = {Kaer_Morhen_id}, CurHP = {max(max_hp, cur_hp)} '
                    f'where UserID = {call.message.chat.id}')
     connect.commit()
-    await call.message.answer(text="Пришли в Kaer_Morhen, здесь можно купить зелья. Здоровье восстановлено!")
+    await call.message.answer(text="Прибыли в Kaer_Morhen, здесь можно купить зелья. Здоровье восстановлено!")
 
 
 @dp.callback_query_handler(text_contains=["move_to_Skellige"])
@@ -349,7 +349,7 @@ async def move_to_Skellige(call: types.CallbackQuery):
     cursor.execute(f'update person set LocationID = {Skellige_id}, CurHP = {max(max_hp, cur_hp)} '
                    f'where UserID = {call.message.chat.id}')
     connect.commit()
-    await call.message.answer(text="Пришли в Skellige, сражение начинается!")
+    await call.message.answer(text="Прибыли в Skellige, сражение начинается!")
 
     cursor.execute(f'select MobID from mobs where ReqLevel <= '
                    f'(select Level from person where UserID = {call.message.chat.id})')
@@ -361,12 +361,13 @@ async def move_to_Skellige(call: types.CallbackQuery):
     mob_id = Skellige_mobs[random.randrange(0, len(Skellige_mobs))]
     cursor.execute(f'select HP from mobs where MobID = {mob_id}')
     mob_hp = cursor.fetchall()[0][0]
-    cursor.execute(f'update person set MobId = {mob_id}, MopHP = {mob_hp} where UserID = {call.message.chat.id}')
+    cursor.execute(f'update person set MobId = {mob_id}, MobHP = {mob_hp} where UserID = {call.message.chat.id}')
+    await call.message.answer(text=commands.create_bonuses_text(call.message, cursor))
 
     markup = types.InlineKeyboardMarkup(row_width=4)
     item = types.InlineKeyboardButton(f"Получить информацию о монстре", callback_data=f"mob_info")
     markup.row(item)
-    item = types.InlineKeyboardButton(f"Выпить зелье", callback_data=f"use_potion")
+    item = types.InlineKeyboardButton(f"Выпить зелье", callback_data=f"drink_potion")
     markup.row(item)
     item = types.InlineKeyboardButton(f"Атаковать", callback_data=f"attack")
     markup.row(item)
@@ -408,6 +409,7 @@ async def drink_potion(call: types.CallbackQuery):
     if potions_text == utils.NO_POTION_TEXT or potions_text == utils.EMPTY_INVENTORY_TEXT:
         await call.message.answer(text=utils.MISS_TURN_TEXT)
     else:
+        await call.message.answer(text=potions_text)
         cursor.execute(f"select ItemID from items_links where IsActive = 1 and UserID = {call.message.chat.id}")
         active_items = cursor.fetchall()
         markup = types.InlineKeyboardMarkup(row_width=4)
@@ -424,8 +426,53 @@ async def drink_potion(call: types.CallbackQuery):
 @dp.callback_query_handler(text_contains=["potion"])
 async def potion(call: types.CallbackQuery):
     item_id = call.data.replace('potion_', '')
+    print(item_id)
     await call.message.answer(text=commands.drink_potion(item_id, cursor, connect, call.message))
     await attack_mod(call)
+
+
+@dp.callback_query_handler(text_contains=["attack"])
+async def attack(call: types.CallbackQuery):
+    markup = types.InlineKeyboardMarkup(row_width=4)
+    item = types.InlineKeyboardButton(f"physical", callback_data=f"physical")
+    markup.row(item)
+    item = types.InlineKeyboardButton(f"magic", callback_data=f"magic")
+    markup.row(item)
+    await call.message.answer(text=utils.CHOOSE_ATTACK_TYPE_TEXT, reply_markup=markup)
+
+
+@dp.callback_query_handler(text_contains=["physical"])
+async def physical(call: types.CallbackQuery):
+    action_result = commands.attack_user(call.message, cursor, connect, "physical")
+    if not action_result[0]:
+        await call.message.answer(text=utils.MOB_REMAIN_HP_TEXT + " " + str(action_result[1]))
+        await attack_mod(call)
+    else:
+        await call.message.answer(text=utils.WIN_TEXT)
+        if action_result[1] > 0:
+            await call.message.answer(text=utils.UPDATE_LEVEL_TEXT + " " + str(action_result[1]))
+        await call.message.answer(text=utils.WIN_ITEM_ID_TEXT + " " + str(action_result[2]))
+        await call.message.answer(text=utils.WIN_MONEY_TEXT + " " + str(action_result[3]))
+        cursor.execute(f"update person set LocationID = 1 where UserID = {call.message.chat.id}")
+        connect.commit()
+        await call.message.answer(text="Прибыли в Kaer_Morhen, здесь можно купить зелья. Здоровье восстановлено!")
+
+
+@dp.callback_query_handler(text_contains=["magic"])
+async def magic(call: types.CallbackQuery):
+    action_result = commands.attack_user(call.message, cursor, connect, "magic")
+    if not action_result[0]:
+        await call.message.answer(text=utils.MOB_REMAIN_HP_TEXT + " " + str(action_result[1]))
+        await attack_mod(call)
+    else:
+        await call.message.answer(text=utils.WIN_TEXT)
+        if action_result[1] > 0:
+            await call.message.answer(text=utils.UPDATE_LEVEL_TEXT + " " + str(action_result[1]))
+        await call.message.answer(text=utils.WIN_ITEM_ID_TEXT + " " + str(action_result[2]))
+        await call.message.answer(text=utils.WIN_MONEY_TEXT + " " + str(action_result[3]))
+        cursor.execute(f"update person set LocationID = 1 where UserID = {call.message.chat.id}")
+        connect.commit()
+        await call.message.answer(text="Прибыли в Kaer_Morhen, здесь можно купить зелья. Здоровье восстановлено!")
 
 
 @dp.message_handler()

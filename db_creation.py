@@ -20,7 +20,7 @@ def create_person_db():
             MagicArmour int DEFAULT 0,
             LocationID int DEFAULT 1,
             MobId int DEFAULT 0,
-            MopHP int DEFAULT 0
+            MobHP int DEFAULT 0
             );""")
     connect.commit()
 

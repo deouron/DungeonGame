@@ -1,4 +1,5 @@
 import utils
+import random
 
 
 def create_stats_player_text(person_info, location_info):
@@ -50,9 +51,9 @@ def create_inventory_text(cursor, message):
                    f"    броня +{cur_item[7]}, магическая броня +{cur_item[8]}\n" \
                    f"Нужный уровень для ношения предмета: {cur_item[9]}\n"
         if item[2] == 1:
-            cur_text += "Статус: используется\n\n"
-        else:
             cur_text += f"Статус: {utils.ITEM_IS_IN_USE_TEXT}\n\n"
+        else:
+            cur_text += f"Статус: {utils.ITEM_IS_NOT_IN_USE_TEXT}\n\n"
         text += cur_text
     return text
 
@@ -83,9 +84,9 @@ def create_garments_text(cursor, message):
                    f"    броня +{cur_item[7]}, магическая броня +{cur_item[8]}\n" \
                    f"Нужный уровень для ношения предмета: {cur_item[9]}\n"
         if item[2] == 1:
-            cur_text += "Статус: используется\n\n"
-        else:
             cur_text += f"Статус: {utils.ITEM_IS_IN_USE_TEXT}\n\n"
+        else:
+            cur_text += f"Статус: {utils.ITEM_IS_NOT_IN_USE_TEXT}\n\n"
         text += cur_text
     if can_put_on:
         return text
@@ -152,17 +153,9 @@ def create_items_text(cursor, message):
     return text
 
 
-def buy_item(item_id, cursor, connect, message):
-    cursor.execute(f'select Money, Level from person where UserID = {message.chat.id}')
-    money, Level = cursor.fetchall()[0]
+def add_item(cursor, connect, message, item_id):
     cursor.execute(f'select Cost, ReqLevel, ItemType from items where ItemID = {item_id}')
     item_cost, ReqLevel, ItemType = cursor.fetchall()[0]
-    if ReqLevel > Level:
-        return utils.NOT_ENOUGH_LEVEL_TEXT
-    if item_cost > money:
-        return utils.NOT_ENOUGH_MONEY_TEXT
-    cursor.execute(f'update person set Money = {money - item_cost} where UserID = {message.chat.id}')
-    connect.commit()
     cursor.execute(f'select quantity from items_links where UserID = {message.chat.id} and ItemID = {item_id}')
     quantity = cursor.fetchall()
     if len(quantity) != 0:
@@ -179,6 +172,20 @@ def buy_item(item_id, cursor, connect, message):
                            'values (?, ?, ?, ?)',
                            [message.chat.id, item_id, 1, 0])
         connect.commit()
+
+
+def buy_item(item_id, cursor, connect, message):
+    cursor.execute(f'select Money, Level from person where UserID = {message.chat.id}')
+    money, Level = cursor.fetchall()[0]
+    cursor.execute(f'select Cost, ReqLevel, ItemType from items where ItemID = {item_id}')
+    item_cost, ReqLevel, ItemType = cursor.fetchall()[0]
+    if ReqLevel > Level:
+        return utils.NOT_ENOUGH_LEVEL_TEXT
+    if item_cost > money:
+        return utils.NOT_ENOUGH_MONEY_TEXT
+    cursor.execute(f'update person set Money = {money - item_cost} where UserID = {message.chat.id}')
+    connect.commit()
+    add_item(cursor, connect, message, item_id)
     return utils.SUCCESSFUL_PURCHASE_TEXT
 
 
@@ -278,6 +285,60 @@ def attack_mob(message, cursor):
         return utils.END_TEXT
     cursor.execute(f'update person set CurHP = {new_hp} where UserID = {message.chat.id}')
     return new_hp
+
+
+def update_level(message, cursor, connect, cur_xp):
+    while cur_xp >= 100:
+        cur_xp -= 100
+        cursor.execute(f'select Level, XP, Money, HP, Attack, MagicAttack, Armour, MagicArmour from person '
+                       f'where UserID = {message.chat.id}')
+        Level, XP, Money, HP, Attack, MagicAttack, Armour, MagicArmour = cursor.fetchall()[0]
+        cursor.execute(f'update person set Level = {Level + 1}, HP = {HP + 3}, Attack = {Attack + 3}, '
+                       f'MagicAttack = {MagicAttack + 3}, XP = {cur_xp}, Money = {Money + 10}, Armour = {Armour + 3},'
+                       f' MagicArmour = {MagicArmour + 3} where UserID = {message.chat.id}')
+        connect.commit()
+
+
+def attack_user(message, cursor, connect, attack_type):
+    bonuses = create_bonuses(message, cursor)
+    cursor.execute(f'select MobId, MobHP, Attack, MagicAttack, Money, XP from person where UserID = {message.chat.id}')
+    mob_id, MobHP, Attack, MagicAttack, Money, XP = cursor.fetchall()[0]
+    cursor.execute(f'select Armour, MagicArmour, XP from mobs where MobID = {mob_id}')
+    Armour, MagicArmour, MobXP = cursor.fetchall()[0]
+    if attack_type == "physical":
+        MobHP -= Attack + bonuses[0] - Armour
+    elif attack_type == "magic":
+        MobHP -= MagicAttack + bonuses[1] - MagicArmour
+    cursor.execute(f'update person set MobHP = {MobHP} where UserID = {message.chat.id}')
+    connect.commit()
+    if MobHP > 0:
+        return [False, MobHP]
+    XP += MobXP
+    level_up = XP // 100
+    if XP >= 100:
+        update_level(message, cursor, connect, XP)
+    win_item_id = utils.Skellige_items[random.randrange(0, len(utils.Skellige_items))]
+    win_money = random.randint(utils.Skellige_money[0], utils.Skellige_money[1])
+    cursor.execute(f'select Money from person where UserID = {message.chat.id}')
+    cursor.execute(f'update person set Money = {Money + win_money} where UserID = {message.chat.id}')
+    connect.commit()
+    cursor.execute(f'update person set Money = {Money + win_money} where UserID = {message.chat.id}')
+    connect.commit()
+    add_item(cursor, connect, message, win_item_id)
+    return [True, level_up, win_item_id, win_money]
+
+
+def create_bonuses_text(message, cursor):
+    bonuses = create_bonuses(message, cursor)
+    cursor.execute(f"select CurHP, Attack, MagicAttack, Armour, MagicArmour from person where UserID = {message.chat.id}")
+    CurHP, Attack, MagicAttack, Armour, MagicArmour = cursor.fetchall()[0]
+    text = f"Твои показатели:\n" \
+           f"Текущее здоровье: {CurHP}\n" \
+           f"Атака: {Attack} + {bonuses[0]} = {Attack + bonuses[0]}\n" \
+           f"Магическая атака: {MagicAttack} + {bonuses[1]} = {MagicAttack + bonuses[1]}\n" \
+           f"Броня: {Armour} + {bonuses[2]} = {Armour + bonuses[2]}\n" \
+           f"Магическая броня: {MagicArmour} + {bonuses[3]} = {MagicArmour + bonuses[3]}\n"
+    return text
 
 
 def drink_potion(item_id, cursor, connect, message):
