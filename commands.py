@@ -7,7 +7,7 @@ def create_stats_player_text(person_info, location_info):
                  f"Уровень: {person_info[1]}\n" \
                  f"Максимальное здоровье: {person_info[2]}\n" \
                  f"Текущее здоровье: {person_info[3]}\n" \
-                 f"Число денег: {person_info[4]}\n" \
+                 f"Число монет: {person_info[4]}\n" \
                  f"Базовая атака персонажа: {person_info[5]}\n" \
                  f"Базовая магическая атака персонажа: {person_info[6]}\n" \
                  f"Опыт: {person_info[7]}/100\n" \
@@ -139,7 +139,7 @@ def create_items_text(cursor, message):
         cursor.execute(f'select ItemType, Cost, CostToSale, HP, Mana,  Attack, MagicAttack, Armour, MagicArmour, '
                        f'ReqLevel from items where ItemID = {item[0]}')
         cur_item = list(cursor.fetchall()[0])
-        cur_text = f"№{str(cnt)}\n" \
+        cur_text = f"№{str(cnt)} (id {item[0]})\n" \
                    f"Тип: {cur_item[0]}\n" \
                    f"Цена покупки: {cur_item[1]} (продажи {cur_item[2]})\n" \
                    f"Бонусы:\n" \
@@ -195,7 +195,7 @@ def sell_item(item_id, cursor, connect, message):
     if len(quantity) != 0 and quantity[0][0] > 0:
         cursor.execute(f'select IsActive from items_links where UserID = {message.chat.id} and ItemID = {item_id}')
         IsActive = cursor.fetchall()[0][0]
-        if IsActive == 1:
+        if IsActive == 1 and quantity[0][0] == 1:
             return utils.TAKE_OFF_ITEM_TEXT
         cursor.execute(f'select Money from person where UserID = {message.chat.id}')
         money = cursor.fetchall()[0][0]
@@ -300,6 +300,7 @@ def update_level(message, cursor, connect, cur_xp):
 
 
 def attack_user(message, cursor, connect, attack_type):
+    win_money, win_item_id = 0, 0
     bonuses = create_bonuses(message, cursor)
     cursor.execute(f'select LocationID, MobId, MobHP, Attack, MagicAttack, Money, XP from person where '
                    f'UserID = {message.chat.id}')

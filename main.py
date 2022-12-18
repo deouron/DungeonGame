@@ -1,8 +1,6 @@
 import random
-import os
 import sqlite3
 import asyncio
-from aiogram.utils import executor
 import logging
 from aiogram import Bot, Dispatcher, types
 import time
@@ -110,8 +108,9 @@ async def put_on(message: types.Message):
             if not can_put_on:
                 await message.answer(text=utils.NO_GARMENTS_TEXT + utils.OR_ALL_ITEMS_ARE_USED_TEXT)
             else:
-                await message.answer(text=commands.create_garments_text(cursor, message) + "\n" + utils.CHOOSE_ITEM_TO_USE_TEXT,
-                                     reply_markup=markup)
+                await message.answer(
+                    text=commands.create_garments_text(cursor, message) + "\n" + utils.CHOOSE_ITEM_TO_USE_TEXT,
+                    reply_markup=markup)
 
 
 @dp.callback_query_handler(text_contains=["use_"])
@@ -158,8 +157,9 @@ async def buy_item_Kaer_Morhen(call: types.CallbackQuery):
     markup.row(item)
     item = types.InlineKeyboardButton(f"2", callback_data=f"buy_2")
     markup.row(item)
-    await call.message.answer(text=commands.create_items_text(cursor, call.message) + "\n" + utils.CHOOSE_ITEM_TO_BUY_TEXT,
-                              reply_markup=markup)
+    await call.message.answer(
+        text=commands.create_items_text(cursor, call.message) + "\n" + utils.CHOOSE_ITEM_TO_BUY_TEXT,
+        reply_markup=markup)
 
 
 @dp.callback_query_handler(text_contains=["sell_item_Kaer_Morhen"])
@@ -169,8 +169,9 @@ async def sell_item_Kaer_Morhen(call: types.CallbackQuery):
     markup.row(item)
     item = types.InlineKeyboardButton(f"2", callback_data=f"sell_2")
     markup.row(item)
-    await call.message.answer(text=commands.create_items_text(cursor, call.message) + "\n" + utils.CHOOSE_ITEM_TO_SELL_TEXT,
-                              reply_markup=markup)
+    await call.message.answer(
+        text=commands.create_items_text(cursor, call.message) + "\n" + utils.CHOOSE_ITEM_TO_SELL_TEXT,
+        reply_markup=markup)
 
 
 @dp.callback_query_handler(text_contains=["buy_item_Novigrad"])
@@ -180,8 +181,9 @@ async def buy_item_Novigrad(call: types.CallbackQuery):
     markup.row(item)
     item = types.InlineKeyboardButton(f"2", callback_data=f"buy_9")
     markup.row(item)
-    await call.message.answer(text=commands.create_items_text(cursor, call.message) + "\n" + utils.CHOOSE_ITEM_TO_BUY_TEXT,
-                              reply_markup=markup)
+    await call.message.answer(
+        text=commands.create_items_text(cursor, call.message) + "\n" + utils.CHOOSE_ITEM_TO_BUY_TEXT,
+        reply_markup=markup)
 
 
 @dp.callback_query_handler(text_contains=["sell_item_Novigrad"])
@@ -191,8 +193,9 @@ async def sell_item_Novigrad(call: types.CallbackQuery):
     markup.row(item)
     item = types.InlineKeyboardButton(f"2", callback_data=f"sell_9")
     markup.row(item)
-    await call.message.answer(text=commands.create_items_text(cursor, call.message) + "\n" + utils.CHOOSE_ITEM_TO_SELL_TEXT,
-                              reply_markup=markup)
+    await call.message.answer(
+        text=commands.create_items_text(cursor, call.message) + "\n" + utils.CHOOSE_ITEM_TO_SELL_TEXT,
+        reply_markup=markup)
 
 
 @dp.callback_query_handler(text_contains=["buy_item_White_Orchard"])
@@ -210,8 +213,9 @@ async def buy_item_White_Orchard(call: types.CallbackQuery):
     markup.row(item)
     item = types.InlineKeyboardButton(f"6", callback_data=f"buy_10")
     markup.row(item)
-    await call.message.answer(text=commands.create_items_text(cursor, call.message) + "\n" + utils.CHOOSE_ITEM_TO_BUY_TEXT,
-                              reply_markup=markup)
+    await call.message.answer(
+        text=commands.create_items_text(cursor, call.message) + "\n" + utils.CHOOSE_ITEM_TO_BUY_TEXT,
+        reply_markup=markup)
 
 
 @dp.callback_query_handler(text_contains=["sell_item_White_Orchard"])
@@ -227,8 +231,11 @@ async def sell_item_Novigrad(call: types.CallbackQuery):
     markup.row(item)
     item = types.InlineKeyboardButton(f"5", callback_data=f"sell_7")
     markup.row(item)
-    await call.message.answer(text=commands.create_items_text(cursor, call.message) + "\n" + utils.CHOOSE_ITEM_TO_SELL_TEXT,
-                              reply_markup=markup)
+    item = types.InlineKeyboardButton(f"6", callback_data=f"sell_10")
+    markup.row(item)
+    await call.message.answer(
+        text=commands.create_items_text(cursor, call.message) + "\n" + utils.CHOOSE_ITEM_TO_SELL_TEXT,
+        reply_markup=markup)
 
 
 @dp.callback_query_handler(text_contains=["buy_"])
@@ -252,7 +259,8 @@ async def go(message: types.Message):
     if location_type == "dungeon":
         await message.answer(text=utils.FORBIDDEN_TEXT)
     else:
-        cursor.execute(f'select SecondLocationID, MoveDuration from locations_links where FirstLocationID = {cur_location}')
+        cursor.execute(
+            f'select SecondLocationID, MoveDuration from locations_links where FirstLocationID = {cur_location}')
         to = list(cursor.fetchall())
         markup = types.InlineKeyboardMarkup(row_width=4)
         for location in to:
