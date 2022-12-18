@@ -1,5 +1,6 @@
-# TheWitcherGame
-## @dungeon_game_bot
+# TheWitcherGame (@dungeon_game_bot)
+
+## Видео с примером работы **[link](https://disk.yandex.ru/i/EJ8e6d_EAqgawQ)**
 
 ### Описание
 
