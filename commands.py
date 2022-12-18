@@ -237,6 +237,12 @@ def use_item(item_id, cursor, connect, message):
     return utils.ITEM_IS_IN_USE_TEXT
 
 
+def take_off_item(item_id, cursor, connect, message):
+    cursor.execute(f'update items_links set IsActive = 0 where UserID = {message.chat.id} and ItemID = {item_id}')
+    connect.commit()
+    return utils.ITEM_IS_NOT_IN_USE_TEXT
+
+
 def create_mob_info_text(message, cursor):
     cursor.execute(f'select MobId from person where UserID = {message.chat.id}')
     mob_id = cursor.fetchall()[0][0]
