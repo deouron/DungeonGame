@@ -195,7 +195,9 @@ def sell_item(item_id, cursor, connect, message):
     if len(quantity) != 0 and quantity[0][0] > 0:
         cursor.execute(f'select IsActive from items_links where UserID = {message.chat.id} and ItemID = {item_id}')
         IsActive = cursor.fetchall()[0][0]
-        if IsActive == 1 and quantity[0][0] == 1:
+        cursor.execute(f'select ItemType from items where ItemID = {item_id}')
+        ItemType = cursor.fetchall()[0][0]
+        if IsActive == 1 and quantity[0][0] == 1 and not ItemType == 'potion':
             return utils.TAKE_OFF_ITEM_TEXT
         cursor.execute(f'select Money from person where UserID = {message.chat.id}')
         money = cursor.fetchall()[0][0]
