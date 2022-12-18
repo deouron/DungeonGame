@@ -301,8 +301,9 @@ def update_level(message, cursor, connect, cur_xp):
 
 def attack_user(message, cursor, connect, attack_type):
     bonuses = create_bonuses(message, cursor)
-    cursor.execute(f'select MobId, MobHP, Attack, MagicAttack, Money, XP from person where UserID = {message.chat.id}')
-    mob_id, MobHP, Attack, MagicAttack, Money, XP = cursor.fetchall()[0]
+    cursor.execute(f'select LocationID, MobId, MobHP, Attack, MagicAttack, Money, XP from person where '
+                   f'UserID = {message.chat.id}')
+    LocationID, mob_id, MobHP, Attack, MagicAttack, Money, XP = cursor.fetchall()[0]
     cursor.execute(f'select Armour, MagicArmour, XP from mobs where MobID = {mob_id}')
     Armour, MagicArmour, MobXP = cursor.fetchall()[0]
     if attack_type == "physical":
@@ -317,8 +318,12 @@ def attack_user(message, cursor, connect, attack_type):
     level_up = XP // 100
     if XP >= 100:
         update_level(message, cursor, connect, XP)
-    win_item_id = utils.Skellige_items[random.randrange(0, len(utils.Skellige_items))]
-    win_money = random.randint(utils.Skellige_money[0], utils.Skellige_money[1])
+    if LocationID == 5:
+        win_item_id = utils.Skellige_items[random.randrange(0, len(utils.Skellige_items))]
+        win_money = random.randint(utils.Skellige_money[0], utils.Skellige_money[1])
+    elif LocationID == 4:
+        win_item_id = utils.Crones_items[random.randrange(0, len(utils.Crones_items))]
+        win_money = random.randint(utils.Crones_money[0], utils.Crones_money[1])
     cursor.execute(f'select Money from person where UserID = {message.chat.id}')
     cursor.execute(f'update person set Money = {Money + win_money} where UserID = {message.chat.id}')
     connect.commit()

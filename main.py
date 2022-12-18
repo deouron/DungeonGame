@@ -374,6 +374,50 @@ async def move_to_Skellige(call: types.CallbackQuery):
     await call.message.answer(text=utils.TURN_TEXT, reply_markup=markup)
 
 
+@dp.callback_query_handler(text_contains=["move_to_Crones"])
+async def move_to_Crones(call: types.CallbackQuery):
+    cursor.execute(f'select LocationID from person where UserID = {call.message.chat.id}')
+    cur_location = cursor.fetchall()[0][0]
+    cursor.execute(f'select LocationID from locations where LocationName = "Crones"')
+    Crones_id = cursor.fetchall()[0][0]
+    cursor.execute(f'select MoveDuration from locations_links where FirstLocationID = {cur_location} and '
+                   f'SecondLocationID = {Crones_id}')
+    duration = cursor.fetchall()[0][0]
+    await call.message.answer(text=f"Идём в Crones. Путь займёт {duration} секунд(ы)")
+    await call.message.answer(text=str(duration))
+    for i in range(duration - 1, -1, -1):
+        time.sleep(1)
+        await call.message.answer(text=str(i))
+    cursor.execute(f'select HP, CurHP from person where UserID = {call.message.chat.id}')
+    max_hp, cur_hp = cursor.fetchall()[0]
+    cursor.execute(f'update person set LocationID = {Crones_id}, CurHP = {max(max_hp, cur_hp)} '
+                   f'where UserID = {call.message.chat.id}')
+    connect.commit()
+    await call.message.answer(text="Прибыли в Crones, сражение начинается!")
+
+    cursor.execute(f'select MobID from mobs where ReqLevel <= '
+                   f'(select Level from person where UserID = {call.message.chat.id})')
+    all_req_mobs = cursor.fetchall()
+    Crones_mobs = []
+    for mob in all_req_mobs:
+        if mob[0] in utils.Crones_mobs:
+            Crones_mobs.append(mob[0])
+    mob_id = Crones_mobs[random.randrange(0, len(Crones_mobs))]
+    cursor.execute(f'select HP from mobs where MobID = {mob_id}')
+    mob_hp = cursor.fetchall()[0][0]
+    cursor.execute(f'update person set MobId = {mob_id}, MobHP = {mob_hp} where UserID = {call.message.chat.id}')
+    await call.message.answer(text=commands.create_bonuses_text(call.message, cursor))
+
+    markup = types.InlineKeyboardMarkup(row_width=4)
+    item = types.InlineKeyboardButton(f"Получить информацию о монстре", callback_data=f"mob_info")
+    markup.row(item)
+    item = types.InlineKeyboardButton(f"Выпить зелье", callback_data=f"drink_potion")
+    markup.row(item)
+    item = types.InlineKeyboardButton(f"Атаковать", callback_data=f"attack")
+    markup.row(item)
+    await call.message.answer(text=utils.TURN_TEXT, reply_markup=markup)
+
+
 async def attack_mod(call):
     action_result = commands.attack_mob(call.message, cursor)
     if action_result == utils.END_TEXT:

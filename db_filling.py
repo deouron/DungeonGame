@@ -81,6 +81,10 @@ def fill_mobs():
                    ' VALUES (?, ?, ?, ?, ?, ?, ?)',
                    [6, 110, 1, "physical", 7, 1, 0])
     connect.commit()  # id=1
+    cursor.execute('INSERT INTO mobs (HP, XP, ReqLevel, AttackType, Attack, Armour, MagicArmour)'
+                   ' VALUES (?, ?, ?, ?, ?, ?, ?)',
+                   [4, 90, 1, "physical", 6, 1, 0])
+    connect.commit()  # id=2
 
 
 def fill_locations():
