@@ -34,16 +34,24 @@ def fill_items():
     connect.commit()  # наручи id=7
     cursor.execute('INSERT INTO items (Cost, CostToSale, ItemType, MagicAttack, ReqLevel) '
                    'VALUES (?, ?, ?, ?, ?)',
-                   [3, 2, 'weapon', 10, 1])
+                   [3, 2, 'weapon', 3, 1])
     connect.commit()  # оружие1 id=8
     cursor.execute('INSERT INTO items (Cost, CostToSale, ItemType, Attack, ReqLevel) '
                    'VALUES (?, ?, ?, ?, ?)',
-                   [3, 2, 'weapon', 10, 1])
+                   [3, 2, 'weapon', 3, 1])
     connect.commit()  # оружие2 id=9
     cursor.execute('INSERT INTO items (Cost, CostToSale, ItemType, Armour, MagicArmour, ReqLevel) '
                    'VALUES (?, ?, ?, ?, ?, ?)',
                    [5, 3, 'helmet', 2, 1, 1])
     connect.commit()  # шлем2 id=10
+    cursor.execute('INSERT INTO items (Cost, CostToSale, ItemType, MagicAttack, ReqLevel) '
+                   'VALUES (?, ?, ?, ?, ?)',
+                   [7, 5, 'weapon', 5, 2])
+    connect.commit()  # оружие3 id=11
+    cursor.execute('INSERT INTO items (Cost, CostToSale, ItemType, Attack, ReqLevel) '
+                   'VALUES (?, ?, ?, ?, ?)',
+                   [7, 5, 'weapon', 5, 2])
+    connect.commit()  # оружие4 id=12
 
 
 def fill_items_sellers():
