@@ -117,7 +117,7 @@ def fill_locations():
                    ['Novigrad', 0, 10, "Здесь можно купить оружие"])
     connect.commit()  # id=2
     cursor.execute('INSERT INTO locations (LocationName, XCoord, YCoord, Info) VALUES (?, ?, ?, ?)',
-                   ['White_Orchard', -5, -5, 'Здесь можно купить броню, шлем, сапоги и наручи'])
+                   ['White_Orchard', -4, -4, 'Здесь можно купить броню, шлем, сапоги и наручи'])
     connect.commit()  # id=3
     cursor.execute('INSERT INTO locations (LocationName, LocationType, XCoord, YCoord, Info) VALUES (?, ?, ?, ?, ?)',
                    ['Crones', 'dungeon', 8, 1, 'Слабые монстры, маленький лут'])
