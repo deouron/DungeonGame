@@ -79,7 +79,7 @@ def fill_mobs():
     cursor = connect.cursor()
     cursor.execute('INSERT INTO mobs (HP, XP, ReqLevel, AttackType, Attack, Armour, MagicArmour)'
                    ' VALUES (?, ?, ?, ?, ?, ?, ?)',
-                   [8, 120, 1, "physical", 11, 2, 1])
+                   [8, 120, 2, "physical", 11, 2, 1])
     connect.commit()  # id=1
     cursor.execute('INSERT INTO mobs (HP, XP, ReqLevel, AttackType, Attack, Armour, MagicArmour)'
                    ' VALUES (?, ?, ?, ?, ?, ?, ?)',
@@ -91,7 +91,7 @@ def fill_mobs():
     connect.commit()  # id=3
     cursor.execute('INSERT INTO mobs (HP, XP, ReqLevel, AttackType, Attack, Armour, MagicArmour)'
                    ' VALUES (?, ?, ?, ?, ?, ?, ?)',
-                   [8, 110, 1, "magical", 10, 2, 1])
+                   [8, 110, 2, "magical", 10, 2, 1])
     connect.commit()  # id=4
     cursor.execute('INSERT INTO mobs (HP, XP, ReqLevel, AttackType, Attack, Armour, MagicArmour)'
                    ' VALUES (?, ?, ?, ?, ?, ?, ?)',
