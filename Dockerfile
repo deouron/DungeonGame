@@ -1,17 +1,16 @@
-FROM python:3.7-rc-alpine
+FROM python:latest
 
-RUN pip3 install --upgrade pip
-RUN pip3 install aiogram==2.19
+RUN pip install aiogram==2.19
 
-#ADD main/main.py /main/
-#ADD main/utils.py /main/
-#ADD main/commands.py /main/
-#ADD main/secret.py /main/
-#ADD main/data.db /main/
-#ADD main/db_creation.py /main/
-#ADD main/db_filling.py /main/
-#
-#WORKDIR /main/
+ADD main.py /bot/
+ADD utils.py /bot/
+ADD commands.py /bot/
+ADD secret.py /bot/
+ADD data.db /bot/
+ADD db_creation.py /bot/
+ADD db_filling.py /bot/
 
-EXPOSE 1234
+WORKDIR /bot/
+
+EXPOSE 8888
 CMD ["python", "main.py"]
