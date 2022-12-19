@@ -85,7 +85,7 @@ def create_duration_text(to, duration):
 
 
 Skellige_mobs = [1, 3, 4]
-Skellige_items = [3, 4, 5, 6, 7, 10]
+Skellige_items = [5, 6, 7, 8, 9, 10]
 Skellige_money = [4, 8]
 Crones_mobs = [2, 3, 5]
 Crones_items = [1, 2, 8, 9]
