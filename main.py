@@ -141,7 +141,6 @@ async def take_off(message: types.Message):
                 if cur_item[0] == 'potion':
                     continue
                 can_put_on = True
-                markup = types.InlineKeyboardMarkup(row_width=4)
                 item = types.InlineKeyboardButton(f"{item[0]}", callback_data=f"take_off_{item[0]}")
                 markup.row(item)
             if not can_put_on:
