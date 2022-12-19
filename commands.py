@@ -281,14 +281,14 @@ def create_bonuses(message, cursor):
 
 def attack_mob(message, cursor):
     bonuses = create_bonuses(message, cursor)
-    cursor.execute(f'select MobId, CurHP from person where UserID = {message.chat.id}')
-    mob_id, CurHP = cursor.fetchall()[0]
+    cursor.execute(f'select MobId, CurHP, Armour, MagicArmour from person where UserID = {message.chat.id}')
+    mob_id, CurHP, Armour, MagicArmour = cursor.fetchall()[0]
     cursor.execute(f'select AttackType, Attack from mobs where MobID = {mob_id}')
     AttackType, Attack = cursor.fetchall()[0]
     if AttackType == "physical":
-        Attack = max(0, Attack - bonuses[2])
+        Attack = max(0, Attack - bonuses[2] - Armour)
     else:
-        Attack = max(0, Attack - bonuses[3])
+        Attack = max(0, Attack - bonuses[3] - MagicArmour)
     new_hp = CurHP - Attack
     if new_hp <= 0:
         return utils.END_TEXT

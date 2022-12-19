@@ -98,11 +98,10 @@ async def put_on(message: types.Message):
             can_put_on = False
             for item in user_items:
                 cursor.execute(f'select ItemType from items where ItemID = {item[0]}')
-                cur_item = cursor.fetchall()[0][0]
-                if cur_item[0] == 'potion':
+                ItemType = cursor.fetchall()[0][0]
+                if ItemType == 'potion':
                     continue
                 can_put_on = True
-                markup = types.InlineKeyboardMarkup(row_width=4)
                 item = types.InlineKeyboardButton(f"{item[0]}", callback_data=f"use_{item[0]}")
                 markup.row(item)
             if not can_put_on:
@@ -137,8 +136,8 @@ async def take_off(message: types.Message):
             can_put_on = False
             for item in user_items:
                 cursor.execute(f'select ItemType from items where ItemID = {item[0]}')
-                cur_item = cursor.fetchall()[0][0]
-                if cur_item[0] == 'potion':
+                ItemType = cursor.fetchall()[0][0]
+                if ItemType == 'potion':
                     continue
                 can_put_on = True
                 item = types.InlineKeyboardButton(f"{item[0]}", callback_data=f"take_off_{item[0]}")
