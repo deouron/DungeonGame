@@ -2,7 +2,7 @@ import sqlite3
 
 
 def fill_items():
-    connect = sqlite3.connect('dbs/data.db', check_same_thread=False)
+    connect = sqlite3.connect('data.db', check_same_thread=False)
     cursor = connect.cursor()
     cursor.execute('INSERT INTO items (Cost, CostToSale, ItemType, HP, ReqLevel) '
                    'VALUES (?, ?, ?, ?, ?)',
@@ -55,7 +55,7 @@ def fill_items():
 
 
 def fill_items_sellers():
-    connect = sqlite3.connect('dbs/data.db', check_same_thread=False)
+    connect = sqlite3.connect('data.db', check_same_thread=False)
     cursor = connect.cursor()
     # зелья
     cursor.execute('INSERT INTO items_sellers (LocationID, ItemID) VALUES (?, ?)', [1, 1])
@@ -87,7 +87,7 @@ def fill_items_sellers():
 
 
 def fill_mobs():
-    connect = sqlite3.connect('dbs/data.db', check_same_thread=False)
+    connect = sqlite3.connect('data.db', check_same_thread=False)
     cursor = connect.cursor()
     cursor.execute('INSERT INTO mobs (HP, XP, ReqLevel, AttackType, Attack, Armour, MagicArmour)'
                    ' VALUES (?, ?, ?, ?, ?, ?, ?)',
@@ -112,7 +112,7 @@ def fill_mobs():
 
 
 def fill_locations():
-    connect = sqlite3.connect('dbs/data.db', check_same_thread=False)
+    connect = sqlite3.connect('data.db', check_same_thread=False)
     cursor = connect.cursor()
     cursor.execute('INSERT INTO locations (LocationName, Info) VALUES (?, ?)',
                    ['Kaer_Morhen', "Здесь можно купить зелья"])
@@ -132,7 +132,7 @@ def fill_locations():
 
 
 def fill_location_reachability():
-    connect = sqlite3.connect('dbs/data.db', check_same_thread=False)
+    connect = sqlite3.connect('data.db', check_same_thread=False)
     cursor = connect.cursor()
     cursor.execute(f'select LocationID, XCoord, YCoord from locations')
     locations = list(cursor.fetchall())
@@ -155,7 +155,7 @@ def fill_location_reachability():
 
 
 def give_open_bonus(message):
-    connect = sqlite3.connect('dbs/data.db', check_same_thread=False)
+    connect = sqlite3.connect('data.db', check_same_thread=False)
     cursor = connect.cursor()
     cursor.execute('INSERT INTO items_links (UserID, ItemID, quantity, IsActive)'
                    'values (?, ?, ?, ?)',

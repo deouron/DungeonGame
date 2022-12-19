@@ -2,7 +2,7 @@ import sqlite3
 
 
 def create_person_db():
-    connect = sqlite3.connect('dbs/data.db', check_same_thread=False)
+    connect = sqlite3.connect('data.db', check_same_thread=False)
     cursor = connect.cursor()
     cursor.execute("drop table if exists person")
     connect.commit()
@@ -26,7 +26,7 @@ def create_person_db():
 
 
 def create_mobs_db():
-    connect = sqlite3.connect('dbs/data.db', check_same_thread=False)
+    connect = sqlite3.connect('data.db', check_same_thread=False)
     cursor = connect.cursor()
     cursor.execute("drop table if exists mobs")
     connect.commit()
@@ -44,7 +44,7 @@ def create_mobs_db():
 
 
 def create_locations_db():
-    connect = sqlite3.connect('dbs/data.db', check_same_thread=False)
+    connect = sqlite3.connect('data.db', check_same_thread=False)
     cursor = connect.cursor()
     cursor.execute("drop table if exists locations")
     connect.commit()
@@ -60,7 +60,7 @@ def create_locations_db():
 
 
 def create_locations_links_db():
-    connect = sqlite3.connect('dbs/data.db', check_same_thread=False)
+    connect = sqlite3.connect('data.db', check_same_thread=False)
     cursor = connect.cursor()
     cursor.execute("drop table if exists locations_links")
     connect.commit()
@@ -74,7 +74,7 @@ def create_locations_links_db():
 
 
 def create_items_db():
-    connect = sqlite3.connect('dbs/data.db', check_same_thread=False)
+    connect = sqlite3.connect('data.db', check_same_thread=False)
     cursor = connect.cursor()
     cursor.execute("drop table if exists items")
     connect.commit()
@@ -95,7 +95,7 @@ def create_items_db():
 
 
 def create_items_links_db():
-    connect = sqlite3.connect('dbs/data.db', check_same_thread=False)
+    connect = sqlite3.connect('data.db', check_same_thread=False)
     cursor = connect.cursor()
     cursor.execute("drop table if exists items_links")
     connect.commit()
@@ -110,7 +110,7 @@ def create_items_links_db():
 
 
 def create_items_sellers_db():
-    connect = sqlite3.connect('dbs/data.db', check_same_thread=False)
+    connect = sqlite3.connect('data.db', check_same_thread=False)
     cursor = connect.cursor()
     cursor.execute("drop table if exists items_sellers")
     connect.commit()

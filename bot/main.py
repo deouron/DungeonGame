@@ -4,15 +4,15 @@ import asyncio
 import logging
 from aiogram import Bot, Dispatcher, types
 import time
-from secret import TOKEN
 from db_creation import create_locations_db, create_mobs_db, create_person_db, create_items_db, create_items_links_db, \
     create_locations_links_db, create_items_sellers_db
 from db_filling import fill_items, fill_locations, give_open_bonus, fill_location_reachability, fill_items_sellers, \
     fill_mobs
 import utils
 import commands
+import secret
 
-connect = sqlite3.connect('dbs/data.db', check_same_thread=False)
+connect = sqlite3.connect('data.db', check_same_thread=False)
 cursor = connect.cursor()
 
 create_locations_db()
@@ -30,7 +30,7 @@ fill_location_reachability()
 fill_mobs()
 
 logging.basicConfig(level=logging.INFO)
-bot = Bot(token=TOKEN)
+bot = Bot(token=secret.TOKEN)
 dp = Dispatcher(bot)
 
 
