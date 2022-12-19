@@ -522,7 +522,6 @@ async def drink_potion(call: types.CallbackQuery):
 @dp.callback_query_handler(text_contains=["potion"])
 async def potion(call: types.CallbackQuery):
     item_id = call.data.replace('potion_', '')
-    print(item_id)
     await call.message.answer(text=commands.drink_potion(item_id, cursor, connect, call.message))
     await attack_mod(call)
 
