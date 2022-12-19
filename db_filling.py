@@ -20,15 +20,15 @@ def fill_items():
                    'VALUES (?, ?, ?, ?, ?, ?)',
                    [25, 15, 'armour', 5, 3, 2])
     connect.commit()  # броня2 id=4
-    cursor.execute('INSERT INTO items (Cost, CostToSale, ItemType, Armour,MagicArmour, ReqLevel) '
+    cursor.execute('INSERT INTO items (Cost, CostToSale, ItemType, Armour, MagicArmour, ReqLevel) '
                    'VALUES (?, ?, ?, ?, ?, ?)',
                    [10, 7, 'helmet', 5, 3, 1])
     connect.commit()  # шлем1 id=5
-    cursor.execute('INSERT INTO items (Cost, CostToSale, ItemType, Armour,MagicArmour, ReqLevel) '
+    cursor.execute('INSERT INTO items (Cost, CostToSale, ItemType, Armour, MagicArmour, ReqLevel) '
                    'VALUES (?, ?, ?, ?, ?, ?)',
                    [5, 3, 'boots', 2, 1, 1])
     connect.commit()  # сапоги id=6
-    cursor.execute('INSERT INTO items (Cost, CostToSale, ItemType, Armour,MagicArmour, ReqLevel) '
+    cursor.execute('INSERT INTO items (Cost, CostToSale, ItemType, Armour, MagicArmour, ReqLevel) '
                    'VALUES (?, ?, ?, ?, ?, ?)',
                    [5, 3, 'bracers', 2, 1, 1])
     connect.commit()  # наручи id=7
@@ -40,7 +40,7 @@ def fill_items():
                    'VALUES (?, ?, ?, ?, ?)',
                    [3, 2, 'weapon', 10, 1])
     connect.commit()  # оружие2 id=9
-    cursor.execute('INSERT INTO items (Cost, CostToSale, ItemType, Armour,MagicArmour, ReqLevel) '
+    cursor.execute('INSERT INTO items (Cost, CostToSale, ItemType, Armour, MagicArmour, ReqLevel) '
                    'VALUES (?, ?, ?, ?, ?, ?)',
                    [5, 3, 'helmet', 2, 1, 1])
     connect.commit()  # шлем2 id=10
@@ -79,16 +79,24 @@ def fill_mobs():
     cursor = connect.cursor()
     cursor.execute('INSERT INTO mobs (HP, XP, ReqLevel, AttackType, Attack, Armour, MagicArmour)'
                    ' VALUES (?, ?, ?, ?, ?, ?, ?)',
-                   [6, 110, 1, "physical", 9, 1, 0])
+                   [8, 120, 1, "physical", 11, 2, 1])
     connect.commit()  # id=1
     cursor.execute('INSERT INTO mobs (HP, XP, ReqLevel, AttackType, Attack, Armour, MagicArmour)'
                    ' VALUES (?, ?, ?, ?, ?, ?, ?)',
-                   [4, 90, 1, "physical", 6, 1, 0])
+                   [6, 90, 1, "magical", 9, 1, 0])
     connect.commit()  # id=2
     cursor.execute('INSERT INTO mobs (HP, XP, ReqLevel, AttackType, Attack, Armour, MagicArmour)'
                    ' VALUES (?, ?, ?, ?, ?, ?, ?)',
-                   [7, 130, 1, "physical", 11, 2, 1])
+                   [7, 110, 1, "physical", 11, 2, 1])
     connect.commit()  # id=3
+    cursor.execute('INSERT INTO mobs (HP, XP, ReqLevel, AttackType, Attack, Armour, MagicArmour)'
+                   ' VALUES (?, ?, ?, ?, ?, ?, ?)',
+                   [8, 110, 1, "magical", 10, 2, 1])
+    connect.commit()  # id=4
+    cursor.execute('INSERT INTO mobs (HP, XP, ReqLevel, AttackType, Attack, Armour, MagicArmour)'
+                   ' VALUES (?, ?, ?, ?, ?, ?, ?)',
+                   [6, 95, 1, "physical", 12, 10, 0])
+    connect.commit()  # id=5
 
 
 def fill_locations():

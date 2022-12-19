@@ -37,7 +37,7 @@ HELPER_TEXT = 'Во время боя за 1 ход можно либо полу
 HELLO_TEXT = 'Привет! Персонаж создан! В качестве бонуса ты получаешь 2 зелья, броню и шлем!\n' \
              'Подробности и правила игры: /help\n'
 UNKNOWN_TEST = 'Я не знаю такую команду, читай /help'
-FORBIDDEN_TEXT = "Ты сейчас в подземелье, действие не доступно!\n"
+FORBIDDEN_TEXT = "Ты сейчас в подземелье, действие недоступно!\n"
 EMPTY_INVENTORY_TEXT = "В инвентаре пусто"
 NO_GARMENTS_TEXT = "В инвентаре нет оружия и одежды"
 NO_POTION_TEXT = "В инвентаре нет зелий"
@@ -84,9 +84,9 @@ def create_duration_text(to, duration):
     return f"Идём в {to}. Путь займёт {duration} секунд(ы)"
 
 
-Skellige_mobs = [1]
+Skellige_mobs = [1, 3, 4]
 Skellige_items = [3, 4, 5, 6, 7, 10]
 Skellige_money = [4, 8]
-Crones_mobs = [2]
+Crones_mobs = [2, 3, 5]
 Crones_items = [1, 2, 8, 9]
 Crones_money = [1, 3]

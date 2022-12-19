@@ -526,7 +526,7 @@ async def attack(call: types.CallbackQuery):
     markup = types.InlineKeyboardMarkup(row_width=4)
     item = types.InlineKeyboardButton(f"physical", callback_data=f"physical")
     markup.row(item)
-    item = types.InlineKeyboardButton(f"magic", callback_data=f"magic")
+    item = types.InlineKeyboardButton(f"magical", callback_data=f"magical")
     markup.row(item)
     await call.message.answer(text=utils.CHOOSE_ATTACK_TYPE_TEXT, reply_markup=markup)
 
@@ -548,9 +548,9 @@ async def physical(call: types.CallbackQuery):
         await call.message.answer(text=utils.Kaer_Morhen_ARRIVAL_TEXT)
 
 
-@dp.callback_query_handler(text_contains=["magic"])
-async def magic(call: types.CallbackQuery):
-    action_result = commands.attack_user(call.message, cursor, connect, "magic")
+@dp.callback_query_handler(text_contains=["magical"])
+async def magical(call: types.CallbackQuery):
+    action_result = commands.attack_user(call.message, cursor, connect, "magical")
     if not action_result[0]:
         await call.message.answer(text=utils.MOB_REMAIN_HP_TEXT + " " + str(action_result[1]))
         await attack_mod(call)
