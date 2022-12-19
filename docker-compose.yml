@@ -1,5 +1,7 @@
 version: "3"
 services:
   bot:
-    build: bot/
+    build: main/
     command: python ./main.py
+  db:
+    build: second_docker/
