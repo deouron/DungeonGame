@@ -80,6 +80,10 @@ def fill_items_sellers():
     connect.commit()
     cursor.execute('INSERT INTO items_sellers (LocationID, ItemID) VALUES (?, ?)', [2, 9])
     connect.commit()
+    cursor.execute('INSERT INTO items_sellers (LocationID, ItemID) VALUES (?, ?)', [2, 11])
+    connect.commit()
+    cursor.execute('INSERT INTO items_sellers (LocationID, ItemID) VALUES (?, ?)', [2, 12])
+    connect.commit()
 
 
 def fill_mobs():
