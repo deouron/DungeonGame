@@ -42,7 +42,8 @@ def create_inventory_text(cursor, message):
             f'select Cost, CostToSale, ItemType, HP, Mana, Attack, MagicAttack, Armour, MagicArmour, '
             f'ReqLevel from items where ItemID = {item[0]}')
         cur_item = list(cursor.fetchall()[0])
-        cur_text = f"Тип: {cur_item[2]}\n" \
+        cur_text = f"Id: {item[0]}\n" \
+                   f"Тип: {cur_item[2]}\n" \
                    f"Количество: {item[1]}\n" \
                    f"Цена покупки: {cur_item[0]} (продажи {cur_item[1]})\n" \
                    f"Бонусы: \n" \
@@ -334,8 +335,7 @@ def attack_user(message, cursor, connect, attack_type):
         win_item_id = utils.Crones_items[random.randrange(0, len(utils.Crones_items))]
         win_money = random.randint(utils.Crones_money[0], utils.Crones_money[1])
     cursor.execute(f'select Money from person where UserID = {message.chat.id}')
-    cursor.execute(f'update person set Money = {Money + win_money} where UserID = {message.chat.id}')
-    connect.commit()
+    Money = cursor.fetchall()[0][0]
     cursor.execute(f'update person set Money = {Money + win_money} where UserID = {message.chat.id}')
     connect.commit()
     add_item(cursor, connect, message, win_item_id)
