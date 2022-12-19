@@ -317,7 +317,7 @@ def attack_user(message, cursor, connect, attack_type):
     Armour, MagicArmour, MobXP = cursor.fetchall()[0]
     if attack_type == "physical":
         MobHP -= Attack + bonuses[0] - Armour
-    elif attack_type == "magic":
+    elif attack_type == "magical":
         MobHP -= MagicAttack + bonuses[1] - MagicArmour
     cursor.execute(f'update person set MobHP = {MobHP} where UserID = {message.chat.id}')
     connect.commit()
