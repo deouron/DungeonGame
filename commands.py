@@ -302,9 +302,12 @@ def update_level(message, cursor, connect, cur_xp):
         cursor.execute(f'select Level, XP, Money, HP, Attack, MagicAttack, Armour, MagicArmour from person '
                        f'where UserID = {message.chat.id}')
         Level, XP, Money, HP, Attack, MagicAttack, Armour, MagicArmour = cursor.fetchall()[0]
-        cursor.execute(f'update person set Level = {Level + 1}, HP = {HP + 3}, Attack = {Attack + 3}, '
-                       f'MagicAttack = {MagicAttack + 3}, XP = {cur_xp}, Money = {Money + 10}, Armour = {Armour + 3},'
-                       f' MagicArmour = {MagicArmour + 3} where UserID = {message.chat.id}')
+        cursor.execute(f'update person set Level = {Level + 1}, HP = {HP + utils.LEVEL_UP_HP}, '
+                       f'Attack = {Attack + utils.LEVEL_UP_ATTACK_ARMOUR}, '
+                       f'MagicAttack = {MagicAttack + utils.LEVEL_UP_ATTACK_ARMOUR}, XP = {cur_xp}, '
+                       f'Money = {Money + utils.LEVEL_UP_MONEY}, '
+                       f'Armour = {Armour + utils.LEVEL_UP_ATTACK_ARMOUR},'
+                       f' MagicArmour = {MagicArmour + utils.LEVEL_UP_ATTACK_ARMOUR} where UserID = {message.chat.id}')
         connect.commit()
 
 
