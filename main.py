@@ -218,6 +218,10 @@ async def buy_item_Novigrad(call: types.CallbackQuery):
     markup.row(item)
     item = types.InlineKeyboardButton(f"2", callback_data=f"buy_9")
     markup.row(item)
+    item = types.InlineKeyboardButton(f"3", callback_data=f"buy_11")
+    markup.row(item)
+    item = types.InlineKeyboardButton(f"4", callback_data=f"buy_12")
+    markup.row(item)
     await call.message.answer(
         text=commands.create_items_text(cursor, call.message) + "\n" + utils.CHOOSE_ITEM_TO_BUY_TEXT,
         reply_markup=markup)
@@ -229,6 +233,10 @@ async def sell_item_Novigrad(call: types.CallbackQuery):
     item = types.InlineKeyboardButton(f"1", callback_data=f"sell_8")
     markup.row(item)
     item = types.InlineKeyboardButton(f"2", callback_data=f"sell_9")
+    markup.row(item)
+    item = types.InlineKeyboardButton(f"3", callback_data=f"buy_11")
+    markup.row(item)
+    item = types.InlineKeyboardButton(f"4", callback_data=f"buy_12")
     markup.row(item)
     await call.message.answer(
         text=commands.create_items_text(cursor, call.message) + "\n" + utils.CHOOSE_ITEM_TO_SELL_TEXT,
