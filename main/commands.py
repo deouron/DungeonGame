@@ -331,6 +331,9 @@ def attack_user(message, cursor, connect, attack_type):
     level_up = XP // 100
     if XP >= 100:
         update_level(message, cursor, connect, XP)
+    else:
+        cursor.execute(f'update person set XP = {XP} where UserID = {message.chat.id}')
+        connect.commit()
     if LocationID == 5:
         win_item_id = utils.Skellige_items[random.randrange(0, len(utils.Skellige_items))]
         win_money = random.randint(utils.Skellige_money[0], utils.Skellige_money[1])
