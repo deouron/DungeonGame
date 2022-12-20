@@ -89,7 +89,7 @@ def create_duration_text(to, duration):
     return f"Идём в {to}. Путь займёт {duration} секунд(ы)"
 
 
-Skellige_mobs = [1, 3, 4]
+Skellige_mobs = [1, 3, 4, 5]
 Skellige_items = [5, 6, 7, 8, 9, 10]
 Skellige_money = [3, 5]
 Crones_mobs = [2, 3, 5]
